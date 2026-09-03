@@ -368,6 +368,10 @@ code {
   color: var(--ds-muted);
 }
 
+.case-card > .case-card-top + .case-card-sub {
+  margin-top: 1rem;
+}
+
 .case-metrics {
   display: grid;
   gap: 0.85rem;

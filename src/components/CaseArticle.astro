@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { getRelativeLocaleUrl } from "astro:i18n";
+import CaseCard from "./CaseCard.astro";
 import { caseCover } from "../lib/covers";
 import { caseFields, localeFromAstro } from "../lib/i18n";
 import type { CaseRecord } from "../lib/types";
@@ -15,10 +16,19 @@ const copy = caseFields(item, locale);
 ---
 
 <article class="wrap narrow py-16 md:py-24">
-  <p class="badge">{copy.industry}</p>
-  <p class="mt-4 text-sm text-muted">{copy.clientName}</p>
+  <p class="text-sm text-muted">{copy.clientName}</p>
   <h1 class="page-h1 mt-3">{copy.title}</h1>
-  <p class="mt-6 text-lg leading-8 text-accent">{copy.result}</p>
+
+  <div class="mt-8">
+    <CaseCard
+      industry={copy.industry}
+      employees={copy.employees}
+      title={copy.title}
+      subtitle={copy.subtitle}
+      metrics={copy.metrics}
+      showTitle={false}
+    />
+  </div>
 
   <div class="mt-10 border border-line">
     <Image

@@ -7,19 +7,35 @@ interface Props {
   title: string;
   subtitle: string;
   metrics: CaseMetric[];
-  href: string;
-  readLabel: string;
+  href?: string;
+  readLabel?: string;
+  showTitle?: boolean;
 }
 
-const { industry, employees, title, subtitle, metrics, href, readLabel } = Astro.props;
+const {
+  industry,
+  employees,
+  title,
+  subtitle,
+  metrics,
+  href,
+  readLabel,
+  showTitle = true,
+} = Astro.props;
+
+const Tag = href ? "a" : "section";
 ---
 
-<a href={href} class="case-card panel panel-link">
+<Tag
+  href={href}
+  class:list={["case-card panel", href && "panel-link"]}
+  aria-label={href ? undefined : title}
+>
   <div class="case-card-top">
     <p class="badge">{industry}</p>
     {employees && <p class="case-card-employees">{employees}</p>}
   </div>
-  <h3>{title}</h3>
+  {showTitle && <h3>{title}</h3>}
   <p class="case-card-sub">{subtitle}</p>
   <ul class="case-metrics">
     {
@@ -36,5 +52,5 @@ const { industry, employees, title, subtitle, metrics, href, readLabel } = Astro
       ))
     }
   </ul>
-  <p class="case-card-more">{readLabel} →</p>
-</a>
+  {href && readLabel && <p class="case-card-more">{readLabel} →</p>}
+</Tag>
