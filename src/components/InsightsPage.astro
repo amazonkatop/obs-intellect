@@ -1,7 +1,10 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Breadcrumb from "./Breadcrumb.astro";
+import CtaBand from "./CtaBand.astro";
+import CtaPair from "./CtaPair.astro";
 import Layout from "../layouts/Layout.astro";
+import { HOME } from "../lib/copy/home";
 import { INSIGHT_CLUSTERS, LANDING_BY_SLUG } from "../lib/copy/landings";
 import { compactPath, locText, type Locale } from "../lib/i18n";
 
@@ -13,6 +16,7 @@ const { locale } = Astro.props;
 const home = compactPath(getRelativeLocaleUrl(locale, "/"));
 const here = compactPath(getRelativeLocaleUrl(locale, "/insights"));
 const isRu = locale === "ru";
+const copy = HOME[locale];
 const loc = (value: { en: string; ru: string }) => locText(locale, value);
 ---
 
@@ -43,6 +47,9 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
           : "Each page is built for a search intent: implementing AI, agents, automation, process audit, SaaS, MVP. The home page stays a brand page — these URLs collect the organic traffic."
       }
     </p>
+    <div class="mt-8">
+      <CtaPair locale={locale} />
+    </div>
 
     {
       INSIGHT_CLUSTERS.map((cluster) => (
@@ -69,4 +76,6 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
       ))
     }
   </div>
+
+  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} />
 </Layout>

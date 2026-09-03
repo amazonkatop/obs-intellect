@@ -75,3 +75,10 @@ It renders `legal_info`, OKVED 62.01, activity codes from Order No. 449, the imp
 - Content pages ship **no client-side JS** except locale/theme snippets. The mobile menu is a CSS checkbox.
 
 Replace placeholder legal identifiers in `legal_info` before any government filing. The seed INN/OGRN are not a real entity.
+
+## 7. Sitewide CTAs
+
+Lead buttons are identical on marketing pages: **Start an AI audit / Запустить AI-аудит** → `/ai-audit` (Russian: `/ru/ai-audit`) and **Write to the team / Написать команде** → `/contacts`. They appear twice: in the hero (`CtaPair`) and in the closing band (`CtaBand`). The footer does not add a third button — only a text link to the AI-audit URL.
+
+**Priority — not done:** `/ru/ai-audit` (and `/ai-audit`) is still a marketing landing. There is no working AI chat. All primary CTAs now point here, so connecting the assistant (DeepSeek API) is the next product task. See `TODO.md`.
+

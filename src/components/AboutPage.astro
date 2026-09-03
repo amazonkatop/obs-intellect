@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Breadcrumb from "./Breadcrumb.astro";
 import CtaBand from "./CtaBand.astro";
+import CtaPair from "./CtaPair.astro";
 import PersonCard from "./PersonCard.astro";
 import Layout from "../layouts/Layout.astro";
 import { HOME, WHY_ROLES } from "../lib/copy/home";
@@ -18,7 +19,6 @@ const isRu = locale === "ru";
 const copy = HOME[locale];
 const home = compactPath(getRelativeLocaleUrl(locale, "/"));
 const about = compactPath(getRelativeLocaleUrl(locale, "/about"));
-const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 const origin = Astro.site?.toString() ?? "";
 const loc = (value: { en: string; ru: string }) => locText(locale, value);
 const schema = TEAM.map((member) => ({
@@ -60,6 +60,9 @@ const schema = TEAM.map((member) => ({
           : `We do not sell technology. We solve business problems with technology. ${SITE.name} publishes the people because a mid-market owner asks who will still be there after the pitch.`
       }
     </p>
+    <div class="mt-8">
+      <CtaPair locale={locale} />
+    </div>
 
     <div id="team" class="mt-16 grid gap-4 md:grid-cols-3">
       {TEAM.map((member) => <PersonCard member={member} locale={locale} />)}
@@ -86,12 +89,5 @@ const schema = TEAM.map((member) => ({
     </section>
   </div>
 
-  <CtaBand
-    h2={copy.finalH2}
-    text={copy.final}
-    primaryHref={contacts}
-    primaryLabel={copy.ctaPrimary}
-    secondaryHref={`${contacts}#checkup`}
-    secondaryLabel={copy.ctaSecondary}
-  />
+  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} />
 </Layout>

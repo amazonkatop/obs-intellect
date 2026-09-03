@@ -1,15 +1,12 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
 import { HOME } from "../lib/copy/home";
 import type { Locale } from "../lib/i18n";
-import { compactPath } from "../lib/i18n";
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
-const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 const isRu = locale === "ru";
 const items = HOME[locale].techItems;
 ---
@@ -43,10 +40,5 @@ const items = HOME[locale].techItems;
         ))
       }
     </ul>
-    <p class="mt-8">
-      <a href={contacts} class="btn-secondary">
-        {isRu ? "Обсудить контур" : "Discuss the landscape"}
-      </a>
-    </p>
   </div>
 </section>

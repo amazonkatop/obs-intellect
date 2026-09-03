@@ -1,15 +1,19 @@
 ---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { HOME } from "../lib/copy/home";
+import { compactPath, localeFromAstro, type Locale } from "../lib/i18n";
+
 interface Props {
   h2: string;
   text: string;
-  primaryHref: string;
-  primaryLabel: string;
-  secondaryHref?: string;
-  secondaryLabel?: string;
-  note?: string;
+  locale?: Locale;
 }
 
-const { h2, text, primaryHref, primaryLabel, secondaryHref, secondaryLabel, note } = Astro.props;
+const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
+const copy = HOME[locale];
+const aiAudit = compactPath(getRelativeLocaleUrl(locale, "/ai-audit"));
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+const { h2, text } = Astro.props;
 ---
 
 <section class="border-t border-line">
@@ -17,15 +21,8 @@ const { h2, text, primaryHref, primaryLabel, secondaryHref, secondaryLabel, note
     <h2 class="page-h2 max-w-3xl">{h2}</h2>
     <p class="mt-5 max-w-2xl text-base leading-7 text-muted md:text-lg md:leading-8">{text}</p>
     <div class="mt-8 flex flex-wrap items-center gap-3">
-      <a href={primaryHref} class="btn-primary">{primaryLabel}</a>
-      {
-        secondaryHref && secondaryLabel && (
-          <a href={secondaryHref} class="btn-secondary">
-            {secondaryLabel}
-          </a>
-        )
-      }
+      <a href={aiAudit} class="btn-primary">{copy.ctaPrimary}</a>
+      <a href={contacts} class="btn-secondary">{copy.ctaSecondary}</a>
     </div>
-    {note && <p class="mt-6 max-w-2xl text-base leading-7 text-muted">{note}</p>}
   </div>
 </section>

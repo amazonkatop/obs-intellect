@@ -1,6 +1,9 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import CaseCard from "./CaseCard.astro";
+import CtaBand from "./CtaBand.astro";
+import CtaPair from "./CtaPair.astro";
+import { HOME } from "../lib/copy/home";
 import { caseFields, localeFromAstro } from "../lib/i18n";
 import type { CaseRecord } from "../lib/types";
 
@@ -11,11 +14,15 @@ interface Props {
 const { item } = Astro.props;
 const locale = localeFromAstro(Astro.currentLocale);
 const copy = caseFields(item, locale);
+const band = HOME[locale];
 ---
 
 <article class="wrap narrow py-16 md:py-24">
   <p class="text-sm text-muted">{copy.clientName}</p>
   <h1 class="page-h1 mt-3">{copy.title}</h1>
+  <div class="mt-8">
+    <CtaPair locale={locale} />
+  </div>
 
   <div class="mt-8">
     <CaseCard
@@ -47,9 +54,7 @@ const copy = caseFields(item, locale);
     <a href={getRelativeLocaleUrl(locale, "/cases")} class="text-primary no-underline">
       {locale === "ru" ? "Все кейсы" : "All cases"}
     </a>
-    <span class="text-muted"> / </span>
-    <a href={getRelativeLocaleUrl(locale, "/contacts")} class="text-primary no-underline">
-      {locale === "ru" ? "Провести аудит" : "Start a business audit"}
-    </a>
   </p>
 </article>
+
+<CtaBand h2={band.finalH2} text={band.final} locale={locale} />

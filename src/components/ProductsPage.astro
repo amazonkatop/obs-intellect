@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Breadcrumb from "./Breadcrumb.astro";
 import CtaBand from "./CtaBand.astro";
+import CtaPair from "./CtaPair.astro";
 import ServiceCard from "./ServiceCard.astro";
 import Layout from "../layouts/Layout.astro";
 import { CHANGE_OFFERS, HOME } from "../lib/copy/home";
@@ -18,7 +19,6 @@ const isRu = locale === "ru";
 const copy = HOME[locale];
 const home = compactPath(getRelativeLocaleUrl(locale, "/"));
 const products = compactPath(getRelativeLocaleUrl(locale, "/products"));
-const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 const catalogue = services.filter((item) => !item.is_saas);
 const saas = services.filter((item) => item.is_saas);
 const loc = (value: { en: string; ru: string }) => locText(locale, value);
@@ -57,6 +57,9 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
         </p>
       )
     }
+    <div class="mt-8">
+      <CtaPair locale={locale} />
+    </div>
 
     <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {
@@ -101,12 +104,5 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
     </div>
   </div>
 
-  <CtaBand
-    h2={copy.finalH2}
-    text={copy.final}
-    primaryHref={contacts}
-    primaryLabel={copy.ctaPrimary}
-    secondaryHref={`${contacts}#checkup`}
-    secondaryLabel={copy.ctaSecondary}
-  />
+  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} />
 </Layout>

@@ -1,7 +1,8 @@
 ---
+import { getRelativeLocaleUrl } from "astro:i18n";
 import Layout from "../layouts/Layout.astro";
 import { HOME } from "../lib/copy/home";
-import { IT_ACCREDITATION_PATH, type Locale } from "../lib/i18n";
+import { compactPath, IT_ACCREDITATION_PATH, type Locale } from "../lib/i18n";
 import { SITE } from "../lib/types";
 
 interface Props {
@@ -13,6 +14,7 @@ const copy = HOME[locale];
 const formAction = (import.meta.env.PUBLIC_FORM_ENDPOINT || "").trim();
 const legal = IT_ACCREDITATION_PATH;
 const isRu = locale === "ru";
+const aiAudit = compactPath(getRelativeLocaleUrl(locale, "/ai-audit"));
 const headcountOptions = isRu
   ? ["1–50", "51–250", "251–1000", "1000+"]
   : ["1–50", "51–250", "251–1,000", "1,000+"];
@@ -23,20 +25,26 @@ const revenueOptions = isRu
 
 <Layout
   locale={locale}
-  title={isRu ? "Провести аудит бизнеса" : "Start a business audit"}
+  title={isRu ? "Написать команде" : "Write to the team"}
   description={
     isRu
-      ? "Бесплатная первичная диагностика: отрасль, численность, IT-системы и главная проблема. Определим 3–5 процессов, где автоматизация и AI могут дать наибольший эффект."
-      : "A short AI business check-up: industry, headcount, IT systems, and the main problem. We name 3–5 processes where automation and AI are most likely to move the number."
+      ? "Форма для тех, кто хочет сразу человека, а не AI-аудит. Отрасль, численность, IT-системы и главная проблема — ответим живым предложением."
+      : "A human contact form if you want to talk to the team rather than start the AI audit. Industry, headcount, IT systems, and the main problem — we reply in person."
   }
 >
   <div class="wrap grid gap-12 py-16 md:grid-cols-2 md:py-24">
     <div>
       <p class="badge">{isRu ? "Контакты" : "Contact"}</p>
       <h1 class="page-h1 mt-4">
-        {isRu ? "Провести аудит бизнеса" : "Talk to an expert"}
+        {isRu ? "Написать команде" : "Write to the team"}
       </h1>
-      <p class="mt-6 text-base leading-7 text-muted md:text-lg md:leading-8">{copy.checkup}</p>
+      <p class="mt-6 text-base leading-7 text-muted md:text-lg md:leading-8">
+        {
+          isRu
+            ? "Эта форма идёт к человеку, не в AI-чат. Если удобнее начать с автоматической диагностики — "
+            : "This form goes to a person, not an AI chat. If you would rather start with an automated diagnosis — "
+        }<a href={aiAudit} class="text-primary no-underline hover:underline">{copy.ctaPrimary}</a>.
+      </p>
       <p class="mt-4 text-base leading-7 text-muted">
         {
           isRu
@@ -68,7 +76,7 @@ const revenueOptions = isRu
       action={formAction || `mailto:${SITE.email}`}
       enctype={formAction ? "application/x-www-form-urlencoded" : "text/plain"}
     >
-      <h2 class="text-lg font-semibold">{isRu ? "AI Business Check-up" : "AI Business Check-up"}</h2>
+      <h2 class="text-lg font-semibold">{isRu ? "Заявка команде" : "Message the team"}</h2>
       {
         !formAction && (
           <p class="mt-2 text-sm text-muted">
@@ -128,7 +136,7 @@ const revenueOptions = isRu
       }
 
       <button type="submit" class="btn-primary mt-6 w-full">
-        {copy.ctaPrimary}
+        {isRu ? "Отправить заявку" : "Send the request"}
       </button>
       <p class="mt-3 text-xs leading-5 text-muted">
         {isRu ? "Без регистрации, пароля и капчи." : "No account, password, or captcha."}

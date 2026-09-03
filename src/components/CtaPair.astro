@@ -1,0 +1,20 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { HOME } from "../lib/copy/home";
+import { compactPath, localeFromAstro, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+  class?: string;
+}
+
+const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
+const copy = HOME[locale];
+const aiAudit = compactPath(getRelativeLocaleUrl(locale, "/ai-audit"));
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+---
+
+<div class:list={["flex flex-wrap items-center gap-3", Astro.props.class]}>
+  <a href={aiAudit} class="btn-primary">{copy.ctaPrimary}</a>
+  <a href={contacts} class="btn-secondary">{copy.ctaSecondary}</a>
+</div>
