@@ -6,7 +6,7 @@ import FaqList from "./FaqList.astro";
 import Layout from "../layouts/Layout.astro";
 import { CHANGE_OFFERS, HERO_METRICS, HOME, METHOD_STEPS, PLATFORM_POINTS, WHY_ROLES } from "../lib/copy/home";
 import { SITE_FAQ } from "../lib/copy/faq";
-import { compactPath, locText, type Locale } from "../lib/i18n";
+import { compactPath, caseFields, locText, type Locale } from "../lib/i18n";
 import { TEAM, teamCopy } from "../lib/team";
 import type { CaseRecord } from "../lib/types";
 
@@ -230,8 +230,23 @@ const schema = [
         <h2 class="page-h2">{copy.casesH2}</h2>
         <a href={casesHref} class="text-base text-primary no-underline">{copy.casesLink}</a>
       </div>
-      <div class="mt-8 grid gap-8 md:grid-cols-3">
-        {cases.map((item) => <CaseCard item={item} compact />)}
+      <div class="mt-8 grid gap-4 md:grid-cols-3">
+        {
+          cases.map((item) => {
+            const view = caseFields(item, locale);
+            return (
+              <CaseCard
+                href={compactPath(getRelativeLocaleUrl(locale, `/cases/${item.slug}`))}
+                industry={view.industry}
+                employees={view.employees}
+                title={view.title}
+                subtitle={view.subtitle}
+                metrics={view.metrics}
+                readLabel={locale === "ru" ? "Читать кейс" : "Read the case"}
+              />
+            );
+          })
+        }
       </div>
     </div>
   </section>

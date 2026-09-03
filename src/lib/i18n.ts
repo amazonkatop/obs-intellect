@@ -1,4 +1,5 @@
 import type { CaseRecord, ServiceRecord } from "./types";
+import { casePresentation } from "./copy/cases";
 
 export type Locale = "en" | "ru";
 
@@ -44,9 +45,18 @@ export function serviceFields(service: ServiceRecord, locale: Locale) {
 }
 
 export function caseFields(item: CaseRecord, locale: Locale) {
+  const pack = casePresentation(item.slug, locale);
   return {
     problem: locale === "ru" ? item.problem_ru : item.problem_en,
     solution: locale === "ru" ? item.solution_ru : item.solution_en,
     result: locale === "ru" ? item.result_ru : item.result_en,
+    clientName: pack?.clientName ?? item.client_name,
+    industry: pack?.industry ?? item.industry,
+    employees: pack?.employees ?? "",
+    title: pack?.title ?? item.client_name,
+    subtitle: pack?.subtitle ?? "",
+    alt: pack?.alt ?? (locale === "ru" ? `Схема внедрения: ${item.industry}` : `Diagram for the ${item.industry} implementation`),
+    description: pack?.description ?? `${item.industry}: ${locale === "ru" ? item.result_ru : item.result_en}`.slice(0, 160),
+    metrics: pack?.metrics ?? [],
   };
 }

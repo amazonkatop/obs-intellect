@@ -15,14 +15,15 @@ const copy = caseFields(item, locale);
 ---
 
 <article class="wrap narrow py-16 md:py-24">
-  <p class="badge">{item.industry}</p>
-  <h1 class="page-h1 mt-4">{item.client_name}</h1>
+  <p class="badge">{copy.industry}</p>
+  <p class="mt-4 text-sm text-muted">{copy.clientName}</p>
+  <h1 class="page-h1 mt-3">{copy.title}</h1>
   <p class="mt-6 text-lg leading-8 text-accent">{copy.result}</p>
 
   <div class="mt-10 border border-line">
     <Image
       src={caseCover(item.slug)}
-      alt={locale === "ru" ? `Схема внедрения: ${item.industry}` : `Diagram for the ${item.industry} implementation`}
+      alt={copy.alt}
       width={960}
       height={540}
       class="w-full"

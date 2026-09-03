@@ -1,38 +1,40 @@
 ---
-import { Image } from "astro:assets";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { caseCover } from "../lib/covers";
-import { caseFields, localeFromAstro } from "../lib/i18n";
-import type { CaseRecord } from "../lib/types";
+import type { CaseMetric } from "../lib/copy/cases";
 
 interface Props {
-  item: CaseRecord;
-  compact?: boolean;
+  industry: string;
+  employees: string;
+  title: string;
+  subtitle: string;
+  metrics: CaseMetric[];
+  href: string;
+  readLabel: string;
 }
 
-const { item, compact = false } = Astro.props;
-const locale = localeFromAstro(Astro.currentLocale);
-const copy = caseFields(item, locale);
-const href = getRelativeLocaleUrl(locale, `/cases/${item.slug}`);
+const { industry, employees, title, subtitle, metrics, href, readLabel } = Astro.props;
 ---
 
-<article class="panel overflow-hidden p-0">
-  <a href={href} class:list={["block no-underline", !compact && "md:grid md:grid-cols-12 md:gap-10"]}>
-    <Image
-      src={caseCover(item.slug)}
-      alt={locale === "ru" ? `Иллюстрация кейса: ${item.client_name}` : `Visual for ${item.client_name} case`}
-      width={960}
-      height={540}
-      class:list={[compact ? "aspect-[16/9] w-full object-cover" : "aspect-[16/9] w-full object-cover md:col-span-5"]}
-      densities={[1, 2]}
-    />
-    <div class:list={[compact ? "p-6" : "p-6 md:col-span-7 md:flex md:flex-col md:justify-center md:py-8"]}>
-      <p class="badge">{item.industry}</p>
-      <h3 class="mt-3 text-xl font-semibold text-ink md:text-2xl">{item.client_name}</h3>
-      <p class="mt-3 text-base leading-7 text-accent">{copy.result}</p>
-      <p class="mt-4 text-base text-primary">
-        {locale === "ru" ? "Читать кейс" : "Read the case"}
-      </p>
-    </div>
-  </a>
-</article>
+<a href={href} class="case-card panel panel-link">
+  <div class="case-card-top">
+    <p class="badge">{industry}</p>
+    {employees && <p class="case-card-employees">{employees}</p>}
+  </div>
+  <h3>{title}</h3>
+  <p class="case-card-sub">{subtitle}</p>
+  <ul class="case-metrics">
+    {
+      metrics.slice(0, 3).map((metric) => (
+        <li>
+          <div class="case-metric-head">
+            <span class="case-metric-label">{metric.label}</span>
+            <span class="case-metric-value">{metric.value}</span>
+          </div>
+          <div class="case-metric-bar" aria-hidden="true">
+            <span class="case-metric-bar-fill" style={`width:${metric.barWidth}%`} />
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="case-card-more">{readLabel} →</p>
+</a>

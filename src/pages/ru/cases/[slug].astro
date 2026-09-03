@@ -2,6 +2,7 @@
 import CaseArticle from "../../../components/CaseArticle.astro";
 import Layout from "../../../layouts/Layout.astro";
 import { getCases } from "../../../lib/db";
+import { caseFields } from "../../../lib/i18n";
 import type { CaseRecord } from "../../../lib/types";
 
 export async function getStaticPaths() {
@@ -17,12 +18,9 @@ interface Props {
 }
 
 const { item } = Astro.props;
+const copy = caseFields(item, "ru");
 ---
 
-<Layout
-  locale="ru"
-  title={`${item.client_name} — кейс`}
-  description={`${item.industry}: ${item.result_ru}`.slice(0, 160)}
->
+<Layout locale="ru" title={copy.title} description={copy.description}>
   <CaseArticle item={item} />
 </Layout>
