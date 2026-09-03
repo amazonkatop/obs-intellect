@@ -1,8 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import CaseCard from "./CaseCard.astro";
-import { caseCover } from "../lib/covers";
 import { caseFields, localeFromAstro } from "../lib/i18n";
 import type { CaseRecord } from "../lib/types";
 
@@ -27,17 +25,6 @@ const copy = caseFields(item, locale);
       subtitle={copy.subtitle}
       metrics={copy.metrics}
       showTitle={false}
-    />
-  </div>
-
-  <div class="mt-10 border border-line">
-    <Image
-      src={caseCover(item.slug)}
-      alt={copy.alt}
-      width={960}
-      height={540}
-      class="w-full"
-      densities={[1, 2]}
     />
   </div>
 
