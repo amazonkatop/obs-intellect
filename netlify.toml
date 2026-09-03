@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Astro emits directory index files; pretty URLs serve /about from /about/index.html.
+[build.processing]
+  skip_processing = false
+
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
