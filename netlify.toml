@@ -1,3 +1,6 @@
+# Test hosting on Netlify. Production target: Timeweb Cloud Apps (static `dist/`).
+# Set PUBLIC_SITE_URL and DATABASE_URL in Netlify → Environment variables (build-time only).
+
 [build]
   command = "npm run build"
   publish = "dist"
@@ -5,10 +8,18 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Astro emits directory index files; pretty URLs serve /about from /about/index.html.
 [build.processing]
   skip_processing = false
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Astro `trailingSlash: "never"` still emits directory indexes; unknown paths → 404 page.
 [[redirects]]
   from = "/*"
   to = "/404.html"

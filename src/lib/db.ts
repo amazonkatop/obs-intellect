@@ -2,6 +2,8 @@ import { Client } from "pg";
 import { fallbackCases, fallbackLegal, fallbackServices } from "./fallback";
 import type { CaseRecord, ItActivityCode, LegalInfo, ServiceRecord } from "./types";
 
+/** Timeweb Cloud PostgreSQL at Astro build time. No Supabase client. */
+
 function readDatabaseUrl(): string {
   return String(import.meta.env.DATABASE_URL || process.env.DATABASE_URL || "").trim();
 }

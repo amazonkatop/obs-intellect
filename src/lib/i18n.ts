@@ -2,7 +2,7 @@ import type { CaseRecord, ServiceRecord } from "./types";
 
 export type Locale = "en" | "ru";
 
-export const MANUAL_LOCALE_KEY = "nexora-locale-manual";
+export const MANUAL_LOCALE_KEY = "obs-intellect-locale-manual";
 
 export function pathWithoutLocale(pathname: string): string {
   const clean = pathname.replace(/\/$/, "") || "/";

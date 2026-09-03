@@ -90,7 +90,7 @@ export const fallbackServices: ServiceRecord[] = [
   },
   {
     id: "00000000-0000-4000-8000-000000000006",
-    slug: "nexora-pulse",
+    slug: "obs-pulse",
     title_en: "OBS Pulse (SaaS, R&D)",
     title_ru: "OBS Pulse (SaaS, стадия НИОКР)",
     description_en:
@@ -202,7 +202,7 @@ export const fallbackLegal: LegalInfo = {
   full_name: "Общество с ограниченной ответственностью «ОБС Интеллект»",
   short_name: "ООО «ОБС Интеллект»",
   legal_address: "Российская Федерация, г. Москва, ул. Примерная, д. 1, офис 1",
-  email: "legal@nexora.example",
+  email: "legal@obs-intellect.example",
   phone: "+7 (495) 000-00-00",
   okved_primary: "62.01",
   okved_codes: ["62.01", "62.02", "62.09", "63.11"],

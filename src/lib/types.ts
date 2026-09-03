@@ -60,6 +60,6 @@ export const SITE = {
     "OBS Intellect is a business transformation partner for mid-market companies: we analyze how the business works, find growth points, and build AI and software that change operations. Own SaaS platform OBS Pulse is in R&D.",
   descriptionRu:
     "ООО «ОБС Интеллект» — партнёр по трансформации среднего бизнеса: анализируем действующий бизнес, находим точки роста и создаём AI и software solutions, затем сами внедряем изменения. Собственная SaaS-платформа OBS Pulse — на стадии НИОКР.",
-  email: "hello@nexora.example",
+  email: "hello@obs-intellect.example",
   defaultOgLocale: "en_US",
 } as const;

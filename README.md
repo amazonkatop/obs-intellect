@@ -1,6 +1,10 @@
-# Nexora — international AI studio site
+# OBS Intellect / ООО «ОБС Интеллект»
 
-Astro SSG + Tailwind CSS v4 + Supabase (PostgreSQL) at **build time**. Visitors receive static HTML; the database is not called from the browser.
+Marketing site for a business-first technology partner. English at `/`, Russian at `/ru/`.
+
+**Stack:** Astro 5 (static HTML) + Tailwind CSS v4 + PostgreSQL on Timeweb Cloud (read at **build time**) + **Netlify** for the test deploy. Production target: **Timeweb Cloud Apps** (serve `dist/`). Visitors never call the database from the browser.
+
+Test URL: [https://obs-intellect.netlify.app](https://obs-intellect.netlify.app)
 
 ## 1. Install
 
@@ -9,59 +13,65 @@ npm install
 cp .env.example .env
 ```
 
-Fill `.env`:
-
 | Variable | Where it is used |
 | --- | --- |
 | `PUBLIC_SITE_URL` | Canonical URLs, Open Graph, `sitemap-index.xml` |
-| `SUPABASE_URL` | Build-time fetch only (server) |
-| `SUPABASE_ANON_KEY` | Build-time fetch only (anon key + RLS) |
+| `DATABASE_URL` | Build-time PostgreSQL only (`pg`). Not exposed to the client |
 | `PUBLIC_FORM_ENDPOINT` | Optional POST target for `/contacts` |
 
-Without Supabase credentials the build still succeeds: pages use local fallback content from `src/lib/fallback.ts`.
+Without `DATABASE_URL` the build still succeeds: pages use local fallback content from `src/lib/fallback.ts`.
 
 ```bash
 npm run dev
 npm run build
 ```
 
-## 2. Supabase tables
+Dev server: `http://127.0.0.1:4321/` (`npm run dev`, not `astro preview`).
 
-1. Create a project at [supabase.com](https://supabase.com).
-2. SQL Editor → paste and run `supabase/schema.sql`.
+## 2. PostgreSQL (Timeweb Cloud)
+
+1. Create a Managed PostgreSQL cluster in [Timeweb Cloud](https://timeweb.cloud/).
+2. Open the cluster SQL console (Adminer) and run `db/schema.sql`.
 3. **Replace** the seed row in `legal_info` with real ЕГРЮЛ data (full name, ИНН, ОГРН, КПП, address, contacts) **before** filing for accreditation.
-4. Copy Project URL and `anon` `public` key into `.env` and into Cloudflare Pages environment variables.
-5. Do **not** put `service_role` in the Astro project.
+4. Create a dedicated LOGIN role with **SELECT** only on `services_and_products`, `cases`, and `legal_info` (the script grants this to role `obs_build` if that role exists). Put that user’s connection string in `DATABASE_URL`.
+5. There is no Supabase SDK and no Row Level Security. Access is ordinary PostgreSQL privileges on the build user.
 
-Row Level Security allows `SELECT` of active catalogue/cases and of `legal_info` for `anon`. There are no public insert/update policies.
+Copy `DATABASE_URL` into `.env` and into the host’s build environment (Netlify now, Timeweb Apps later). A content change in PostgreSQL appears on the next site build, not on every page view.
 
-Cloudflare Pages rebuilds the site on git push, so content changes in Supabase appear after the next build — not on every page view.
+## 3. Test hosting: Netlify
 
-## 3. Cloudflare Pages + DNS
+Git push to `main` triggers a production build (GitHub Action → Netlify).
 
-- Framework preset: **Astro**
 - Build command: `npm run build`
-- Output directory: `dist`
+- Publish directory: `dist`
 - Node.js: **22**
-- Environment variables: the same four keys as `.env`
+- Environment: the same keys as `.env` (`PUBLIC_SITE_URL`, `DATABASE_URL`, optional `PUBLIC_FORM_ENDPOINT`)
 
-Move the domain’s DNS to Cloudflare (full setup) so the site resolves both globally and from Russia without a VPN. Pages provides HTTPS. After the first production deploy, set `PUBLIC_SITE_URL` to the real `https://` origin and rebuild so the sitemap uses the correct host.
+After the first deploy, set `PUBLIC_SITE_URL` to `https://obs-intellect.netlify.app` (or the custom domain) and rebuild so the sitemap uses the correct host.
 
-Submit `https://<domain>/sitemap-index.xml` in Google Search Console and Yandex Webmaster.
+## 4. Production hosting: Timeweb Cloud Apps
 
-## 4. Accreditation page
+When leaving the test stage:
+
+1. Create a Cloud Apps application, Node **22**, build `npm run build`, publish `dist` (or run `npm start`, which serves `dist` via `scripts/serve-static.mjs`).
+2. Set the same environment variables. Point `PUBLIC_SITE_URL` at the Timeweb (or custom) HTTPS origin and rebuild.
+3. Attach the domain in Timeweb DNS. Submit `https://<domain>/sitemap-index.xml` in Google Search Console and Yandex Webmaster.
+
+## 5. Accreditation page
 
 Russian legal page, always public:
 
-`/ru/it-organization`
+`/ru/svedeniya-ob-it-organizacii`
 
-It renders `legal_info`, OKVED 62.01, activity codes from Order No. 449, the implementation stack, base tariffs, and the own SaaS product (Nexora Pulse) in R&D. Linked from the footer of every page. No captcha, login, or extra JavaScript.
+(alias `/ru/it-organization`)
 
-## 5. Architecture notes
+It renders `legal_info`, OKVED 62.01, activity codes from Order No. 449, the implementation stack, base tariffs, and the own SaaS product (OBS Pulse) in R&D. Linked from the footer. No captcha, login, or extra JavaScript.
 
-- `output: "static"` — no adapter required for Cloudflare Pages.
+## 6. Architecture notes
+
+- `output: "static"` — no serverless adapter on Netlify or Timeweb.
 - `@astrojs/sitemap` writes `sitemap-index.xml` on every build.
-- Images go through `astro:assets` `<Image />` (local SVG case graphics).
-- Content pages ship **no client-side JS**. The mobile menu is a CSS checkbox.
+- Images go through `astro:assets` `<Image />`.
+- Content pages ship **no client-side JS** except locale/theme snippets. The mobile menu is a CSS checkbox.
 
 Replace placeholder legal identifiers in `legal_info` before any government filing. The seed INN/OGRN are not a real entity.

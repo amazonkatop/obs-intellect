@@ -2,9 +2,10 @@
 -- OBS INTELLECT — schema for Timeweb Cloud Managed PostgreSQL
 -- Run in: Timeweb Cloud → Databases → cluster → Web interface (Adminer) → SQL
 -- Site reads these tables only at Astro build time. Visitors never reach the DB.
+-- Vanilla PostgreSQL: no Supabase roles, no Row Level Security.
+-- Access is the ordinary LOGIN role in DATABASE_URL (GRANT SELECT below).
+-- Requires PostgreSQL 13+ (built-in gen_random_uuid).
 -- =============================================================================
-
-create extension if not exists pgcrypto;
 
 -- -----------------------------------------------------------------------------
 -- updated_at helper
@@ -185,7 +186,7 @@ insert into public.services_and_products (
   true
 ),
 (
-  'nexora-pulse',
+  'obs-pulse',
   'OBS Pulse (SaaS, R&D)',
   'OBS Pulse (SaaS, стадия НИОКР)',
   'Own SaaS in the digital-twin line: the platform helps our analysts and engineers turn data and business requirements into working digital solutions faster. Currently in research and development. Exclusive rights remain with the company. Planned access: paid subscription (SaaS). Architecture is IP and is not published. Not yet listed in the Russian software registry.',
@@ -270,7 +271,7 @@ insert into public.legal_info (
   'Общество с ограниченной ответственностью «ОБС Интеллект»',
   'ООО «ОБС Интеллект»',
   'Российская Федерация, г. Москва, ул. Примерная, д. 1, офис 1',
-  'legal@nexora.example',
+  'legal@obs-intellect.example',
   '+7 (495) 000-00-00',
   '62.01',
   array['62.01', '62.02', '62.09', '63.11'],
@@ -322,3 +323,21 @@ on conflict (id) do update set
   okved_codes = excluded.okved_codes,
   it_activity_codes = excluded.it_activity_codes,
   updated_at = now();
+
+-- -----------------------------------------------------------------------------
+-- Privileges: ordinary PostgreSQL GRANTs (no RLS, no Supabase anon role)
+-- Create a dedicated read-only login in Timeweb Cloud and put it in DATABASE_URL.
+-- The cluster owner can skip this if that owner is the build-time user.
+-- -----------------------------------------------------------------------------
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'obs_build') then
+    grant usage on schema public to obs_build;
+    grant select on table
+      public.services_and_products,
+      public.cases,
+      public.legal_info
+      to obs_build;
+  end if;
+end
+$$;
