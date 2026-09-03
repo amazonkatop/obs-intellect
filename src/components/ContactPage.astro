@@ -2,6 +2,7 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import Layout from "../layouts/Layout.astro";
 import { HOME } from "../lib/copy/home";
+import { getLegalInfo } from "../lib/db";
 import { compactPath, IT_ACCREDITATION_PATH, type Locale } from "../lib/i18n";
 import { SITE } from "../lib/types";
 
@@ -12,9 +13,11 @@ interface Props {
 const { locale } = Astro.props;
 const copy = HOME[locale];
 const formAction = (import.meta.env.PUBLIC_FORM_ENDPOINT || "").trim();
-const legal = IT_ACCREDITATION_PATH;
+const legalPage = IT_ACCREDITATION_PATH;
 const isRu = locale === "ru";
 const aiAudit = compactPath(getRelativeLocaleUrl(locale, "/ai-audit"));
+const org = await getLegalInfo();
+const phoneHref = org.phone.replace(/[^\d+]/g, "");
 const headcountOptions = isRu
   ? ["1–50", "51–250", "251–1000", "1000+"]
   : ["1–50", "51–250", "251–1,000", "1,000+"];
@@ -54,15 +57,37 @@ const revenueOptions = isRu
       </p>
       <dl class="mt-10 space-y-4 text-sm">
         <div>
+          <dt class="text-muted">{isRu ? "Наименование" : "Legal name"}</dt>
+          <dd class="text-ink">{org.full_name}</dd>
+        </div>
+        <div>
+          <dt class="text-muted">{isRu ? "Краткое наименование" : "Short name"}</dt>
+          <dd class="text-ink">{org.short_name}</dd>
+        </div>
+        <div>
+          <dt class="text-muted">{isRu ? "Телефон" : "Phone"}</dt>
+          <dd>
+            <a class="text-ink" href={`tel:${phoneHref}`}>{org.phone}</a>
+          </dd>
+        </div>
+        <div>
           <dt class="text-muted">{isRu ? "Электронная почта" : "Email"}</dt>
           <dd>
-            <a class="text-ink" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+            <a class="text-ink" href={`mailto:${org.email}`}>{org.email}</a>
+            {
+              org.email !== SITE.email && (
+                <span>
+                  {" · "}
+                  <a class="text-ink" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+                </span>
+              )
+            }
           </dd>
         </div>
         <div>
           <dt class="text-muted">{isRu ? "Сведения для аккредитации" : "Legal / accreditation (Russian)"}</dt>
           <dd>
-            <a class="text-primary" href={legal}>{legal}</a>
+            <a class="text-primary" href={legalPage}>{legalPage}</a>
             {isRu ? " — круглосуточно, без входа и капчи." : " — open 24/7, no login, no captcha."}
           </dd>
         </div>

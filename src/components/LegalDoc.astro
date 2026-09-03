@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { LEGAL_PATHS } from "../lib/pay";
+import { SITE } from "../lib/types";
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+}
+
+const { title, description, heading } = Astro.props;
+---
+
+<Layout locale="ru" title={title} description={description}>
+  <article class="wrap legal py-12 md:py-16">
+    <p class="badge">Юридическая информация</p>
+    <h1 class="page-h1 mt-4">{heading}</h1>
+    <p class="mt-4 text-sm leading-6 text-muted">
+      Черновик для подачи в банк. Формулировки в <span class="font-mono text-ink">[квадратных скобках]</span> будут
+      заменены юридическим текстом. Пока страница нужна как публичный адрес и вёрстка.
+    </p>
+    <p class="mt-2 text-sm text-muted">{SITE.legalShort}</p>
+    <div class="legal-doc mt-10 space-y-8 text-base leading-7 text-muted">
+      <slot />
+    </div>
+    <nav class="mt-12 border-t border-line pt-6 text-sm" aria-label="Смежные документы">
+      <ul class="flex flex-wrap gap-x-5 gap-y-2">
+        <li><a class="text-primary" href={LEGAL_PATHS.offer}>Публичная оферта</a></li>
+        <li><a class="text-primary" href={LEGAL_PATHS.refund}>Правила возврата</a></li>
+        <li><a class="text-primary" href={LEGAL_PATHS.privacy}>Политика персональных данных</a></li>
+      </ul>
+    </nav>
+  </article>
+</Layout>

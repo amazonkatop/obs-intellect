@@ -18,7 +18,13 @@ export function isRuPath(pathname: string): boolean {
 }
 
 /** Pages that exist only in the Russian tree. */
-export const RU_ONLY_PATHS = new Set(["/it-organization", "/svedeniya-ob-it-organizacii"]);
+export const RU_ONLY_PATHS = new Set([
+  "/it-organization",
+  "/svedeniya-ob-it-organizacii",
+  "/legal/refund-policy",
+  "/legal/offer",
+  "/legal/privacy",
+]);
 
 /** Canonical page for Минцифры accreditation (приказ № 511). */
 export const IT_ACCREDITATION_PATH = "/ru/svedeniya-ob-it-organizacii";

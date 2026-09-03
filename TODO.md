@@ -14,6 +14,15 @@ Remaining work:
 
 Until this ships, every main CTA lands on a page that describes the audit but cannot run it.
 
+## T-Kassa / express session (UI only)
+
+Checkout pages and legal drafts are on the site. The bank API is **not** connected.
+
+- Stub: `backend/pulse/payment.ts` (`/api/payment/init`, `/api/payment/webhook`).
+- Do not activate Init/webhook until `TKASSA_TERMINAL_KEY` and `TKASSA_SECRET_KEY` are on the Pulse server and Token verification is implemented.
+- Legal copy in `[square brackets]` still needs a lawyer.
+
+
 ## Review (do not change without confirmation)
 
 Some pages may work better with **one** lead button instead of the sitewide pair. Candidates:

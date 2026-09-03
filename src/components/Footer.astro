@@ -3,6 +3,7 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { FOOTER_BUILD, FOOTER_PRACTICE } from "../lib/copy/nav";
 import { HOME } from "../lib/copy/home";
 import { compactPath, IT_ACCREDITATION_PATH, localeFromAstro } from "../lib/i18n";
+import { LEGAL_PATHS } from "../lib/pay";
 import { SITE } from "../lib/types";
 
 const locale = localeFromAstro(Astro.currentLocale);
@@ -71,6 +72,21 @@ const aiAuditLabel = locale === "ru" ? "/ru/ai-audit" : "/ai-audit";
             {locale === "ru" ? "Сведения об ИТ-организации (Минцифры)" : "IT organization page (RU)"}
           </a>
         </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={LEGAL_PATHS.offer}>
+            {locale === "ru" ? "Оферта" : "Offer (RU)"}
+          </a>
+        </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={LEGAL_PATHS.refund}>
+            {locale === "ru" ? "Правила возврата" : "Refund policy (RU)"}
+          </a>
+        </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={LEGAL_PATHS.privacy}>
+            {locale === "ru" ? "Персональные данные" : "Personal data (RU)"}
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -88,6 +104,17 @@ const aiAuditLabel = locale === "ru" ? "/ru/ai-audit" : "/ai-audit";
   </div>
   <div class="wrap border-t border-line py-6 text-xs leading-5 text-muted">
     <p>© {year} {SITE.legalShort}</p>
+    <p class="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+      <a class="text-primary no-underline hover:underline" href={LEGAL_PATHS.offer}>
+        {locale === "ru" ? "Оферта" : "Offer"}
+      </a>
+      <a class="text-primary no-underline hover:underline" href={LEGAL_PATHS.refund}>
+        {locale === "ru" ? "Правила возврата" : "Refund policy"}
+      </a>
+      <a class="text-primary no-underline hover:underline" href={LEGAL_PATHS.privacy}>
+        {locale === "ru" ? "Политика обработки персональных данных" : "Personal data policy"}
+      </a>
+    </p>
     {
       locale === "en" && (
         <p class="mt-2 max-w-3xl">

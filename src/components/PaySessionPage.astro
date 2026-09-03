@@ -1,0 +1,127 @@
+---
+import CheckoutLayout from "../layouts/CheckoutLayout.astro";
+import { EXPRESS_SESSION, LEGAL_PATHS, formatSessionPrice } from "../lib/pay";
+import type { Locale } from "../lib/i18n";
+import { SITE } from "../lib/types";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isRu = locale === "ru";
+const price = formatSessionPrice(locale);
+---
+
+<CheckoutLayout
+  locale={locale}
+  title={isRu ? "Оплата экспресс-сессии" : "Pay for an express session"}
+  description={
+    isRu
+      ? "Экспресс-сессия с бизнес-аналитиком, 30 минут. Оплата 5 000 ₽ картой через Т-Кассу."
+      : "A 30-minute express session with a business analyst. 5,000 RUB, card payment via T-Kassa."
+  }
+>
+  <div class="wrap narrow py-12 md:py-16">
+    <p class="badge">{isRu ? "Оплата" : "Payment"}</p>
+    <h1 class="page-h1 mt-4">{isRu ? "Экспресс-сессия с аналитиком" : "Express session with an analyst"}</h1>
+    <p class="mt-5 text-base leading-7 text-muted">
+      {
+        isRu
+          ? "Экспресс-сессия с бизнес-аналитиком, 30 минут — разбор результатов вашего AI-чекапа и рекомендации по дальнейшим шагам"
+          : "A 30-minute express session with a business analyst: a review of your AI check-up and next-step recommendations."
+      }
+    </p>
+
+    <dl class="mt-10 grid gap-4 border-t border-line pt-8 text-sm">
+      <div class="flex items-baseline justify-between gap-4">
+        <dt class="text-muted">{isRu ? "Длительность" : "Duration"}</dt>
+        <dd class="font-medium">{EXPRESS_SESSION.durationMin} {isRu ? "минут" : "minutes"}</dd>
+      </div>
+      <div class="flex items-baseline justify-between gap-4">
+        <dt class="text-muted">{isRu ? "Сумма к оплате" : "Amount due"}</dt>
+        <dd class="text-2xl font-semibold tracking-[-0.02em]">{price}</dd>
+      </div>
+      <div class="flex items-baseline justify-between gap-4">
+        <dt class="text-muted">{isRu ? "Получатель" : "Payee"}</dt>
+        <dd class="text-right font-medium">{SITE.legalShort}</dd>
+      </div>
+      <div class="flex items-baseline justify-between gap-4">
+        <dt class="text-muted">{isRu ? "Номер сессии" : "Session id"}</dt>
+        <dd class="font-mono text-[13px]" data-pay-field="session_id">—</dd>
+      </div>
+      <div class="flex items-baseline justify-between gap-4">
+        <dt class="text-muted">{isRu ? "Карточка клиента" : "Client card"}</dt>
+        <dd class="font-mono text-[13px]" data-pay-field="client_id">—</dd>
+      </div>
+    </dl>
+
+    <p class="mt-4 text-xs leading-5 text-muted" data-pay-amount-note>
+      {
+        isRu
+          ? "Сумма списания задаётся на сервере (5 000 ₽). Параметр amount в адресе страницы на платёж не влияет."
+          : "The charge is set on the server (5,000 RUB). The amount query parameter does not control the payment."
+      }
+    </p>
+
+    <div class="mt-8">
+      <button type="button" class="btn-primary w-full" id="pay-button" data-locale={locale}>
+        {isRu ? `Оплатить ${price}` : `Pay ${price}`}
+      </button>
+      <p class="mt-3 text-sm leading-6 text-muted" id="pay-status" role="status">
+        {
+          isRu
+            ? "Кнопка откроет виджет Т-Кассы после выдачи терминала банком. Сейчас API не подключён — средства не списываются."
+            : "This button will open the T-Kassa widget once the bank issues a terminal. The API is not connected yet — nothing is charged."
+        }
+      </p>
+    </div>
+
+    <p class="mt-8 text-sm leading-6 text-muted">
+      {
+        isRu
+          ? "Нажимая кнопку, вы подтверждаете, что ознакомились с "
+          : "By continuing you confirm that you have read the "
+      }
+      <a class="text-primary" href={LEGAL_PATHS.offer}>{isRu ? "публичной офертой" : "public offer"}</a>
+      {isRu ? ", " : ", "}
+      <a class="text-primary" href={LEGAL_PATHS.refund}>{isRu ? "правилами возврата" : "refund policy"}</a>
+      {isRu ? " и " : " and "}
+      <a class="text-primary" href={LEGAL_PATHS.privacy}>
+        {isRu ? "политикой обработки персональных данных" : "personal data policy"}
+      </a>.
+    </p>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var sessionId = (params.get("session_id") || "").trim();
+      var clientId = (params.get("client_id") || "").trim();
+      var sessionEl = document.querySelector('[data-pay-field="session_id"]');
+      var clientEl = document.querySelector('[data-pay-field="client_id"]');
+      var button = document.getElementById("pay-button");
+      var statusEl = document.getElementById("pay-status");
+      var ru = button && button.getAttribute("data-locale") === "ru";
+      if (sessionEl) sessionEl.textContent = sessionId || "—";
+      if (clientEl) clientEl.textContent = clientId || "—";
+      if (!button || !statusEl) return;
+      button.addEventListener("click", function () {
+        // Stub: real flow is POST to OBS Pulse /api/payment/init (server holds T-Kassa keys),
+        // then redirect or mount the widget. Do not call the bank API from the browser.
+        var missing = [];
+        if (!sessionId) missing.push("session_id");
+        if (!clientId) missing.push("client_id");
+        if (missing.length) {
+          statusEl.textContent = ru
+            ? "Не хватает параметров в адресе: " + missing.join(", ") + ". Оплата не запускается."
+            : "Missing query parameters: " + missing.join(", ") + ". Payment is not started.";
+          return;
+        }
+        statusEl.textContent = ru
+          ? "Заглушка Т-Кассы: TERMINAL_KEY на сервере не задан. Платёж не создан, средства не списаны."
+          : "T-Kassa stub: TERMINAL_KEY is not set on the server. No payment was created.";
+      });
+    })();
+  </script>
+</CheckoutLayout>

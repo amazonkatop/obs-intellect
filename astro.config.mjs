@@ -29,6 +29,9 @@ export default defineConfig({
         },
       },
       serialize(item) {
+        if (item.url.includes("/pay/")) {
+          return undefined;
+        }
         if (item.url.includes("/svedeniya-ob-it-organizacii") || item.url.includes("/ru/it-organization")) {
           item.priority = 0.9;
         } else if (item.url.endsWith("/") || item.url === site) {
@@ -39,6 +42,8 @@ export default defineConfig({
           item.priority = 0.85;
         } else if (item.url.includes("/cases/")) {
           item.priority = 0.8;
+        } else if (item.url.includes("/legal/")) {
+          item.priority = 0.6;
         } else {
           item.priority = 0.7;
         }

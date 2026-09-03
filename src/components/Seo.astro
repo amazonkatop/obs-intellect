@@ -7,9 +7,10 @@ interface Props {
   title: string;
   description: string;
   lang?: "en" | "ru";
+  robots?: string;
 }
 
-const { title, description, lang = "en" } = Astro.props;
+const { title, description, lang = "en", robots = "index,follow" } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString().replace(/\/$/, "") || Astro.site?.toString();
 const fullTitle = title.includes(SITE.name) ? title : `${title} — ${SITE.name}`;
 const rest = pathWithoutLocale(Astro.url.pathname);
@@ -23,7 +24,7 @@ const ruUrl = new URL(getAbsoluteLocaleUrl("ru", rest), Astro.site).toString().r
 <link rel="alternate" hreflang="en" href={enUrl} />
 <link rel="alternate" hreflang="ru" href={ruUrl} />
 <link rel="alternate" hreflang="x-default" href={enUrl} />
-<meta name="robots" content="index,follow" />
+<meta name="robots" content={robots} />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={SITE.name} />
 <meta property="og:locale" content={lang === "ru" ? "ru_RU" : "en_US"} />

@@ -82,3 +82,19 @@ Lead buttons are identical on marketing pages: **Start an AI audit / Запус�
 
 **Priority — not done:** `/ru/ai-audit` (and `/ai-audit`) is still a marketing landing. There is no working AI chat. All primary CTAs now point here, so connecting the assistant (DeepSeek API) is the next product task. See `TODO.md`.
 
+## 8. Acquiring / T-Kassa (not live)
+
+Checkout UI (no site header):
+
+- `/ru/pay/session` — express session, 5 000 ₽, query `session_id`, `client_id`, `amount` (display only)
+- `/ru/pay/success` — confirmation, return to chat with `session_id`
+- English: `/pay/session`, `/pay/success`
+
+Legal drafts (Russian, placeholders in `[square brackets]`):
+
+- `/ru/legal/refund-policy`
+- `/ru/legal/offer`
+- `/ru/legal/privacy`
+
+The webhook stub lives in `backend/pulse/payment.ts` and is **not** served by Astro. T-Kassa keys belong on the Pulse server only.
+
