@@ -91,6 +91,11 @@ const price = formatSessionPrice(locale);
         {isRu ? "политикой обработки персональных данных" : "personal data policy"}
       </a>.
     </p>
+    <p class="mt-6 text-sm">
+      <a href={isRu ? "/ru/pay" : "/pay"} class="text-primary no-underline hover:underline">
+        {isRu ? "К выбору услуг" : "Back to services"}
+      </a>
+    </p>
   </div>
 
   <script is:inline>

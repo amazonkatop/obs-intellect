@@ -29,7 +29,7 @@ export default defineConfig({
         },
       },
       serialize(item) {
-        if (item.url.includes("/pay/")) {
+        if (item.url.includes("/pay/session") || item.url.includes("/pay/success") || item.url.includes("/admin")) {
           return undefined;
         }
         if (item.url.includes("/svedeniya-ob-it-organizacii") || item.url.includes("/ru/it-organization")) {

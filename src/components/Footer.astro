@@ -63,6 +63,11 @@ const aiAuditLabel = locale === "ru" ? "/ru/ai-audit" : "/ai-audit";
           </a>
         </li>
         <li>
+          <a class="text-ink no-underline hover:text-primary" href={locPath("/pay")}>
+            {locale === "ru" ? "Оплата" : "Pay"}
+          </a>
+        </li>
+        <li>
           <a class="text-ink no-underline hover:text-primary" href={locPath("/contacts")}>
             {locale === "ru" ? "Контакты" : "Contact"}
           </a>
@@ -113,6 +118,9 @@ const aiAuditLabel = locale === "ru" ? "/ru/ai-audit" : "/ai-audit";
       </a>
       <a class="text-primary no-underline hover:underline" href={LEGAL_PATHS.privacy}>
         {locale === "ru" ? "Политика обработки персональных данных" : "Personal data policy"}
+      </a>
+      <a class="text-primary no-underline hover:underline" href={locPath("/pay")}>
+        {locale === "ru" ? "Оплата" : "Pay"}
       </a>
     </p>
     {

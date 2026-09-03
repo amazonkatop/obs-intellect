@@ -51,6 +51,16 @@ const revenueOptions = isRu
       <p class="mt-4 text-base leading-7 text-muted">
         {
           isRu
+            ? "Готовая услуга картой — на странице "
+            : "A fixed-price card payment is on "
+        }
+        <a href={compactPath(getRelativeLocaleUrl(locale, "/pay"))} class="text-primary no-underline hover:underline">
+          {isRu ? "оплаты" : "the payment page"}
+        </a>.
+      </p>
+      <p class="mt-4 text-base leading-7 text-muted">
+        {
+          isRu
             ? "Напишите, как компания зарабатывает и где теряется время. Мы ответим предложением аудита с фиксированным объёмом — или честно скажем, что сейчас строить рано."
             : "Tell us how the company earns money and where hours leak. We reply with a fixed-scope audit — or an honest note that it is too early to build."
         }

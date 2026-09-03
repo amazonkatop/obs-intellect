@@ -86,9 +86,11 @@ Lead buttons are identical on marketing pages: **Start an AI audit / Запус�
 
 Checkout UI (no site header):
 
-- `/ru/pay/session` — express session, 5 000 ₽, query `session_id`, `client_id`, `amount` (display only)
-- `/ru/pay/success` — confirmation, return to chat with `session_id`
-- English: `/pay/session`, `/pay/success`
+- `/ru/pay` — **storefront**: choose a payable service and pay (English: `/pay`)
+- `/ru/pay/session` — chat deep-link for a booked slot (`session_id`, `client_id`)
+- `/ru/pay/success` — confirmation
+
+Online catalogue currently has one SKU: express session, 5 000 ₽. Larger project tariffs are not charged on this page.
 
 Legal drafts (Russian, placeholders in `[square brackets]`):
 

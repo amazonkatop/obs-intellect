@@ -1,0 +1,160 @@
+---
+import CheckoutLayout from "../layouts/CheckoutLayout.astro";
+import { LEGAL_PATHS, PAYABLE_OFFERS, PAY_PATHS, formatRub } from "../lib/pay";
+import type { Locale } from "../lib/i18n";
+import { SITE } from "../lib/types";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isRu = locale === "ru";
+const successPath = isRu ? PAY_PATHS.successRu : PAY_PATHS.successEn;
+const catalog = PAYABLE_OFFERS.map((item) => ({
+  ...item,
+  title: item.title[locale],
+  text: item.text[locale],
+  priceLabel: formatRub(item.priceRub, locale),
+}));
+---
+
+<CheckoutLayout
+  locale={locale}
+  robots="index,follow"
+  title={isRu ? "Оплата услуг" : "Pay for a service"}
+  description={
+    isRu
+      ? "Выберите услугу и оплатите картой: экспресс-сессия с бизнес-аналитиком, 5 000 ₽. Оплата через Т-Кассу."
+      : "Choose a service and pay by card: a 30-minute express session with a business analyst, 5,000 RUB, via T-Kassa."
+  }
+>
+  <div class="wrap narrow py-12 md:py-16">
+    <p class="badge">{isRu ? "Оплата" : "Payment"}</p>
+    <h1 class="page-h1 mt-4">{isRu ? "Выберите услугу и оплатите" : "Choose a service and pay"}</h1>
+    <p class="mt-5 text-base leading-7 text-muted">
+      {
+        isRu
+          ? "Онлайн сейчас можно оплатить фиксированную экспресс-сессию. Крупные контуры (аудит, внедрение, разработка) согласуются отдельно — через форму команде, не картой на этой странице."
+          : "Card checkout covers the fixed-price express session. Larger slices (audit, implementation, build) are scoped with the team, not charged on this page."
+      }
+    </p>
+
+    <form id="pay-form" class="mt-10">
+      <fieldset>
+        <legend class="text-sm text-muted">{isRu ? "Услуга" : "Service"}</legend>
+        <ul class="mt-4 space-y-3">
+          {
+            catalog.map((item, index) => (
+              <li>
+                <label class="panel panel-link flex cursor-pointer items-start gap-4">
+                  <input
+                    class="mt-1"
+                    type="radio"
+                    name="offer"
+                    value={item.id}
+                    data-price={item.priceRub}
+                    data-label={item.priceLabel}
+                    checked={index === 0}
+                  />
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-lg font-semibold text-ink">{item.title}</span>
+                    <span class="mt-2 block text-base leading-7 text-muted">{item.text}</span>
+                    <span class="mt-4 block text-xl font-semibold tracking-[-0.02em]">{item.priceLabel}</span>
+                  </span>
+                </label>
+              </li>
+            ))
+          }
+        </ul>
+      </fieldset>
+
+      <dl class="mt-10 grid gap-4 border-t border-line pt-8 text-sm">
+        <div class="flex items-baseline justify-between gap-4">
+          <dt class="text-muted">{isRu ? "Получатель" : "Payee"}</dt>
+          <dd class="text-right font-medium">{SITE.legalShort}</dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4">
+          <dt class="text-muted">{isRu ? "К оплате" : "Amount due"}</dt>
+          <dd class="text-2xl font-semibold tracking-[-0.02em]" id="pay-total">{catalog[0].priceLabel}</dd>
+        </div>
+      </dl>
+
+      <p class="mt-4 text-xs leading-5 text-muted">
+        {
+          isRu
+            ? "Сумма списания берётся из каталога на сервере, не из того, что можно подменить в браузере."
+            : "The charge is taken from the server catalogue, not from anything the browser can spoof."
+        }
+      </p>
+
+      <button type="submit" class="btn-primary mt-8 w-full" id="pay-button" data-locale={locale} data-success={successPath}>
+        {isRu ? `Оплатить ${catalog[0].priceLabel}` : `Pay ${catalog[0].priceLabel}`}
+      </button>
+      <p class="mt-3 text-sm leading-6 text-muted" id="pay-status" role="status">
+        {
+          isRu
+            ? "Кнопка откроет виджет Т-Кассы после выдачи терминала банком. Сейчас API не подключён — средства не списываются."
+            : "This button will open the T-Kassa widget once the bank issues a terminal. The API is not connected yet — nothing is charged."
+        }
+      </p>
+    </form>
+
+    <p class="mt-8 text-sm leading-6 text-muted">
+      {
+        isRu
+          ? "Оплачивая, вы подтверждаете, что ознакомились с "
+          : "By paying you confirm that you have read the "
+      }
+      <a class="text-primary" href={LEGAL_PATHS.offer}>{isRu ? "публичной офертой" : "public offer"}</a>
+      {isRu ? ", " : ", "}
+      <a class="text-primary" href={LEGAL_PATHS.refund}>{isRu ? "правилами возврата" : "refund policy"}</a>
+      {isRu ? " и " : " and "}
+      <a class="text-primary" href={LEGAL_PATHS.privacy}>
+        {isRu ? "политикой обработки персональных данных" : "personal data policy"}
+      </a>.
+    </p>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var form = document.getElementById("pay-form");
+      var total = document.getElementById("pay-total");
+      var button = document.getElementById("pay-button");
+      var statusEl = document.getElementById("pay-status");
+      if (!form || !button || !total || !statusEl) return;
+      var ru = button.getAttribute("data-locale") === "ru";
+      var successPath = button.getAttribute("data-success") || "/ru/pay/success";
+
+      function selected() {
+        return form.querySelector('input[name="offer"]:checked');
+      }
+
+      function sync() {
+        var radio = selected();
+        if (!radio) return;
+        var label = radio.getAttribute("data-label") || "";
+        total.textContent = label;
+        button.textContent = ru ? "Оплатить " + label : "Pay " + label;
+      }
+
+      form.addEventListener("change", sync);
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var radio = selected();
+        if (!radio) {
+          statusEl.textContent = ru ? "Выберите услугу." : "Choose a service.";
+          return;
+        }
+        // Stub: POST offer id to Pulse /api/payment/init. Amount is looked up server-side by offer id.
+        statusEl.textContent = ru
+          ? "Заглушка Т-Кассы: TERMINAL_KEY на сервере не задан. Платёж не создан, средства не списаны."
+          : "T-Kassa stub: TERMINAL_KEY is not set on the server. No payment was created.";
+        var next = new URL(successPath, window.location.origin);
+        next.searchParams.set("offer", radio.value);
+        // Keep the success URL ready; do not redirect until the bank is connected.
+        button.setAttribute("data-next", next.pathname + next.search);
+      });
+    })();
+  </script>
+</CheckoutLayout>

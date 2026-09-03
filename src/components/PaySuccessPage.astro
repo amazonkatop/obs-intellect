@@ -10,6 +10,8 @@ interface Props {
 const { locale } = Astro.props;
 const isRu = locale === "ru";
 const chatBase = chatReturnHref(locale, "");
+const store = isRu ? "/ru/pay" : "/pay";
+const home = isRu ? "/ru" : "/";
 ---
 
 <CheckoutLayout
@@ -17,34 +19,38 @@ const chatBase = chatReturnHref(locale, "");
   title={isRu ? "Оплата принята" : "Payment received"}
   description={
     isRu
-      ? "Подтверждение оплаты экспресс-сессии с бизнес-аналитиком."
-      : "Confirmation that the express analyst session has been paid."
+      ? "Подтверждение оплаты услуги на сайте ООО «ОБС Интеллект»."
+      : "Confirmation that a service on the OBS Intellect site has been paid."
   }
 >
   <div class="wrap narrow py-12 md:py-16">
     <p class="badge">{isRu ? "Оплата" : "Payment"}</p>
     <h1 class="page-h1 mt-4">{isRu ? "Оплата подтверждена" : "Payment confirmed"}</h1>
-    <p class="mt-5 text-base leading-7 text-muted">
+    <p class="mt-5 text-base leading-7 text-muted" data-success-copy>
       {
         isRu
-          ? "Мы получили подтверждение по экспресс-сессии. Вернитесь в чат — аналитик продолжит разбор с того же диалога."
-          : "The express session is marked as paid. Return to the chat so the analyst can continue the same conversation."
+          ? "Мы зафиксировали оплату выбранной услуги. Если вы пришли из чата — вернитесь в диалог, чтобы продолжить с тем же слотом."
+          : "The selected service is marked as paid. If you came from the chat, return so the same slot can continue."
       }
     </p>
-    <p class="mt-4 text-sm text-muted">
+    <p class="mt-4 text-sm text-muted" data-session-row hidden>
       {isRu ? "Номер сессии:" : "Session id:"}
       <span class="ml-2 font-mono text-ink" data-pay-field="session_id">—</span>
     </p>
-    <p class="mt-8">
-      <a id="chat-return" class="btn-primary" href={chatBase}>
+    <p class="mt-8 flex flex-wrap gap-3">
+      <a id="chat-return" class="btn-primary" href={chatBase} hidden>
         {isRu ? "Вернуться в чат" : "Return to the chat"}
       </a>
+      <a id="store-return" class="btn-primary" href={store}>
+        {isRu ? "К услугам" : "Back to services"}
+      </a>
+      <a class="btn-secondary" href={home}>{isRu ? "На главную" : "Home"}</a>
     </p>
     <p class="mt-4 text-xs leading-5 text-muted">
       {
         isRu
-          ? "Пока Т-Касса не подключена, эта страница — макет успеха. Реальный статус карточки клиента выставит вебхук OBS Pulse после проверки подписи банка."
-          : "Until T-Kassa is connected this is a success mock. The live client-card status will be set by the OBS Pulse webhook after the bank signature is verified."
+          ? "Пока Т-Касса не подключена, эта страница — макет успеха. Реальный статус выставит вебхук после проверки подписи банка."
+          : "Until T-Kassa is connected this is a success mock. Live status will be set by the webhook after the bank signature is verified."
       }
     </p>
   </div>
@@ -53,12 +59,17 @@ const chatBase = chatReturnHref(locale, "");
       var params = new URLSearchParams(window.location.search);
       var sessionId = (params.get("session_id") || "").trim();
       var el = document.querySelector('[data-pay-field="session_id"]');
-      var link = document.getElementById("chat-return");
+      var row = document.querySelector("[data-session-row]");
+      var chat = document.getElementById("chat-return");
+      var store = document.getElementById("store-return");
       if (el) el.textContent = sessionId || "—";
-      if (link && sessionId) {
-        var url = new URL(link.getAttribute("href"), window.location.origin);
+      if (sessionId && row) row.hidden = false;
+      if (sessionId && chat) {
+        chat.hidden = false;
+        var url = new URL(chat.getAttribute("href"), window.location.origin);
         url.searchParams.set("session_id", sessionId);
-        link.setAttribute("href", url.pathname + url.search);
+        chat.setAttribute("href", url.pathname + url.search);
+        if (store) store.className = "btn-secondary";
       }
     })();
   </script>
