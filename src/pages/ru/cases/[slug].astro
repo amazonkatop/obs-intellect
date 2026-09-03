@@ -1,0 +1,28 @@
+---
+import CaseArticle from "../../../components/CaseArticle.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { getCases } from "../../../lib/db";
+import type { CaseRecord } from "../../../lib/types";
+
+export async function getStaticPaths() {
+  const cases = await getCases();
+  return cases.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+interface Props {
+  item: CaseRecord;
+}
+
+const { item } = Astro.props;
+---
+
+<Layout
+  locale="ru"
+  title={`${item.client_name} — кейс`}
+  description={`${item.industry}: ${item.result_ru}`.slice(0, 160)}
+>
+  <CaseArticle item={item} />
+</Layout>

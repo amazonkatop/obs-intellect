@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { isRuPath } from "../lib/i18n";
+
+const ru = isRuPath(Astro.url.pathname);
+---
+
+<Layout
+  locale={ru ? "ru" : "en"}
+  title={ru ? "Страница не найдена" : "Page not found"}
+  description={ru ? "Запрошенный адрес отсутствует на сайте ООО «ОБС Интеллект»." : "The requested page does not exist on the OBS Intellect site."}
+>
+  <div class="wrap py-24">
+    <h1 class="text-4xl">{ru ? "Страница не найдена" : "Page not found"}</h1>
+    <p class="mt-4 max-w-xl text-muted">
+      {ru
+        ? "Этого адреса нет в статической версии сайта. Вернитесь на главную или откройте аудит, если искали, с чего начать."
+        : "This URL is not part of the static site. Go home, or open the business audit if you were looking for where to start."}
+    </p>
+    <p class="mt-8 flex flex-wrap gap-6">
+      <a href={ru ? "/ru" : "/"} class="text-primary">{ru ? "На главную" : "Home"}</a>
+      <a href={ru ? "/ru/business-audit" : "/business-audit"} class="text-primary">
+        {ru ? "Аудит бизнеса" : "Business audit"}
+      </a>
+    </p>
+  </div>
+</Layout>

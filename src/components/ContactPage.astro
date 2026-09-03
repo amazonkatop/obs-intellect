@@ -1,0 +1,138 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { HOME } from "../lib/copy/home";
+import { IT_ACCREDITATION_PATH, type Locale } from "../lib/i18n";
+import { SITE } from "../lib/types";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = HOME[locale];
+const formAction = (import.meta.env.PUBLIC_FORM_ENDPOINT || "").trim();
+const legal = IT_ACCREDITATION_PATH;
+const isRu = locale === "ru";
+const headcountOptions = isRu
+  ? ["1–50", "51–250", "251–1000", "1000+"]
+  : ["1–50", "51–250", "251–1,000", "1,000+"];
+const revenueOptions = isRu
+  ? ["до 120 млн ₽", "120–800 млн ₽", "800 млн – 2 млрд ₽", "более 2 млрд ₽", "не раскрываю"]
+  : ["Under USD 2m", "USD 2–10m", "USD 10–50m", "Over USD 50m", "Prefer not to say"];
+---
+
+<Layout
+  locale={locale}
+  title={isRu ? "Провести аудит бизнеса" : "Start a business audit"}
+  description={
+    isRu
+      ? "Бесплатная первичная диагностика: отрасль, численность, IT-системы и главная проблема. Определим 3–5 процессов, где автоматизация и AI могут дать наибольший эффект."
+      : "A short AI business check-up: industry, headcount, IT systems, and the main problem. We name 3–5 processes where automation and AI are most likely to move the number."
+  }
+>
+  <div class="wrap grid gap-12 py-16 md:grid-cols-2 md:py-24">
+    <div>
+      <p class="eyebrow">{isRu ? "Контакты" : "Contact"}</p>
+      <h1 class="mt-4 text-4xl leading-tight md:text-5xl">
+        {isRu ? "Провести аудит бизнеса" : "Talk to an expert"}
+      </h1>
+      <p class="mt-6 text-lg leading-8 text-muted">{copy.checkup}</p>
+      <p class="mt-4 text-base leading-7 text-muted">
+        {
+          isRu
+            ? "Напишите, как компания зарабатывает и где теряется время. Мы ответим предложением аудита с фиксированным объёмом — или честно скажем, что сейчас строить рано."
+            : "Tell us how the company earns money and where hours leak. We reply with a fixed-scope audit — or an honest note that it is too early to build."
+        }
+      </p>
+      <dl class="mt-10 space-y-4 text-sm">
+        <div>
+          <dt class="text-muted">{isRu ? "Электронная почта" : "Email"}</dt>
+          <dd>
+            <a class="text-ink" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-muted">{isRu ? "Сведения для аккредитации" : "Legal / accreditation (Russian)"}</dt>
+          <dd>
+            <a class="text-primary" href={legal}>{legal}</a>
+            {isRu ? " — круглосуточно, без входа и капчи." : " — open 24/7, no login, no captcha."}
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <form
+      id="checkup"
+      class="scroll-mt-24 border border-line bg-surface p-6"
+      method="post"
+      action={formAction || `mailto:${SITE.email}`}
+      enctype={formAction ? "application/x-www-form-urlencoded" : "text/plain"}
+    >
+      <h2 class="text-lg">{isRu ? "AI Business Check-up" : "AI Business Check-up"}</h2>
+      {
+        !formAction && (
+          <p class="mt-2 text-sm text-muted">
+            {isRu
+              ? "Адрес приёма формы пока не задан. Отправка откроет почтовый клиент. Укажите PUBLIC_FORM_ENDPOINT, когда появится обработчик."
+              : "Form endpoint is not configured yet. Submitting opens your email client. Set PUBLIC_FORM_ENDPOINT when the backend is ready."}
+          </p>
+        )
+      }
+      <input type="hidden" name="locale" value={locale} />
+      <label class="mt-6 block text-sm text-muted" for="name">{isRu ? "Имя" : "Name"}</label>
+      <input id="name" name="name" required autocomplete="name" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      <label class="mt-4 block text-sm text-muted" for="email">{isRu ? "Рабочая почта" : "Work email"}</label>
+      <input id="email" name="email" type="email" required autocomplete="email" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      <label class="mt-4 block text-sm text-muted" for="company">{isRu ? "Компания" : "Company"}</label>
+      <input id="company" name="company" autocomplete="organization" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      <label class="mt-4 block text-sm text-muted" for="industry">{isRu ? "Отрасль" : "Industry"}</label>
+      <input id="industry" name="industry" required class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      <label class="mt-4 block text-sm text-muted" for="headcount">{isRu ? "Количество сотрудников" : "Headcount"}</label>
+      <select id="headcount" name="headcount" required class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink">
+        <option value="">{isRu ? "Выберите диапазон" : "Select a range"}</option>
+        {headcountOptions.map((item) => <option value={item}>{item}</option>)}
+      </select>
+
+      <label class="mt-4 block text-sm text-muted" for="revenue">{isRu ? "Выручка / диапазон" : "Revenue band"}</label>
+      <select id="revenue" name="revenue" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink">
+        <option value="">{isRu ? "По желанию" : "Optional"}</option>
+        {revenueOptions.map((item) => <option value={item}>{item}</option>)}
+      </select>
+
+      <label class="mt-4 block text-sm text-muted" for="systems">{isRu ? "Основные IT-системы" : "Main IT systems"}</label>
+      <input
+        id="systems"
+        name="systems"
+        required
+        placeholder={isRu ? "CRM, 1С, ERP, телефония, диск…" : "CRM, ERP, telephony, files…"}
+        class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink"
+      />
+
+      <label class="mt-4 block text-sm text-muted" for="problem">{isRu ? "Главная проблема" : "Main problem"}</label>
+      <textarea id="problem" name="problem" required rows="4" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      <label class="mt-4 block text-sm text-muted" for="improve">{isRu ? "Что хотите улучшить" : "What you want to improve"}</label>
+      <textarea id="improve" name="improve" rows="3" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+
+      {
+        !isRu && (
+          <>
+            <label class="mt-4 block text-sm text-muted" for="country">Country</label>
+            <input id="country" name="country" autocomplete="country-name" class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" />
+          </>
+        )
+      }
+
+      <button type="submit" class="btn-primary mt-6 w-full">
+        {copy.ctaPrimary}
+      </button>
+      <p class="mt-3 text-xs leading-5 text-muted">
+        {isRu ? "Без регистрации, пароля и капчи." : "No account, password, or captcha."}
+      </p>
+    </form>
+  </div>
+</Layout>

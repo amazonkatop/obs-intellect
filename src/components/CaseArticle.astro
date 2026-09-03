@@ -1,0 +1,57 @@
+---
+import { Image } from "astro:assets";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { caseCover } from "../lib/covers";
+import { caseFields, localeFromAstro } from "../lib/i18n";
+import type { CaseRecord } from "../lib/types";
+
+interface Props {
+  item: CaseRecord;
+}
+
+const { item } = Astro.props;
+const locale = localeFromAstro(Astro.currentLocale);
+const copy = caseFields(item, locale);
+---
+
+<article class="wrap narrow py-16 md:py-24">
+  <p class="text-sm text-muted">{item.industry}</p>
+  <h1 class="mt-4 text-4xl leading-tight md:text-5xl">{item.client_name}</h1>
+  <p class="mt-6 text-lg leading-8 text-accent">{copy.result}</p>
+
+  <div class="mt-10 border border-line">
+    <Image
+      src={caseCover(item.slug)}
+      alt={locale === "ru" ? `Схема внедрения: ${item.industry}` : `Diagram for the ${item.industry} implementation`}
+      width={960}
+      height={540}
+      class="w-full"
+      densities={[1, 2]}
+    />
+  </div>
+
+  <h2 class="mt-12 text-2xl">
+    {locale === "ru" ? "Бизнес-проблема" : "Business problem"}
+  </h2>
+  <p class="mt-4 leading-7 text-muted">{copy.problem}</p>
+
+  <h2 class="mt-10 text-2xl">
+    {locale === "ru" ? "Что обнаружили и что сделали" : "Insight and solution"}
+  </h2>
+  <p class="mt-4 leading-7 text-muted whitespace-pre-line">{copy.solution}</p>
+
+  <h2 class="mt-10 text-2xl">
+    {locale === "ru" ? "Результат" : "Result"}
+  </h2>
+  <p class="mt-4 leading-7 text-accent">{copy.result}</p>
+
+  <p class="mt-12 text-sm">
+    <a href={getRelativeLocaleUrl(locale, "/cases")} class="text-primary no-underline">
+      {locale === "ru" ? "Все кейсы" : "All cases"}
+    </a>
+    <span class="text-muted"> / </span>
+    <a href={getRelativeLocaleUrl(locale, "/contacts")} class="text-primary no-underline">
+      {locale === "ru" ? "Провести аудит" : "Start a business audit"}
+    </a>
+  </p>
+</article>

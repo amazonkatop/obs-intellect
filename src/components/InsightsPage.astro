@@ -1,0 +1,72 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import Breadcrumb from "./Breadcrumb.astro";
+import Layout from "../layouts/Layout.astro";
+import { INSIGHT_CLUSTERS, LANDING_BY_SLUG } from "../lib/copy/landings";
+import { compactPath, locText, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const home = compactPath(getRelativeLocaleUrl(locale, "/"));
+const here = compactPath(getRelativeLocaleUrl(locale, "/insights"));
+const isRu = locale === "ru";
+const loc = (value: { en: string; ru: string }) => locText(locale, value);
+---
+
+<Layout
+  locale={locale}
+  title={isRu ? "Insights: аудит, AI, автоматизация, MVP" : "Insights: audit, AI, automation, MVP"}
+  description={
+    isRu
+      ? "Экспертная база OBS Intellect: как провести аудит бизнес-процессов, с чего начать внедрение ИИ, как оценить ROI цифровизации и как определить MVP."
+      : "OBS Intellect knowledge base: how to audit business processes, where to start with AI, how to judge digital ROI, and how to define an MVP."
+  }
+>
+  <div class="wrap py-16 md:py-24">
+    <Breadcrumb
+      items={[
+        { href: home, label: isRu ? "Главная" : "Home" },
+        { href: here, label: "Insights" },
+      ]}
+    />
+    <p class="eyebrow mt-8">Insights</p>
+    <h1 class="mt-4 max-w-3xl text-4xl leading-tight md:text-5xl">
+      {isRu ? "Не блог ради блога. Экспертная база по задачам бизнеса." : "Not a blog for its own sake. A knowledge base around business problems."}
+    </h1>
+    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
+      {
+        isRu
+          ? "Каждая страница заточена под запрос: внедрение ИИ в бизнес, AI-агенты, автоматизация, аудит процессов, SaaS, MVP. Главная остаётся брендовой — трафик собирают эти материалы."
+          : "Each page is built for a search intent: implementing AI, agents, automation, process audit, SaaS, MVP. The home page stays a brand page — these URLs collect the organic traffic."
+      }
+    </p>
+
+    {
+      INSIGHT_CLUSTERS.map((cluster) => (
+        <section class="mt-16 border-t border-line pt-12">
+          <h2 class="text-2xl md:text-3xl">{loc(cluster.title)}</h2>
+          <ul class="mt-8">
+            {cluster.slugs.map((slug) => {
+              const page = LANDING_BY_SLUG[slug];
+              if (!page) return null;
+              return (
+                <li class="border-t border-line py-6">
+                  <a
+                    href={compactPath(getRelativeLocaleUrl(locale, `/${page.slug}`))}
+                    class="text-xl text-ink no-underline hover:text-primary"
+                  >
+                    {loc(page.h1)}
+                  </a>
+                  <p class="mt-2 max-w-3xl text-sm leading-6 text-muted">{loc(page.description)}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Layout>

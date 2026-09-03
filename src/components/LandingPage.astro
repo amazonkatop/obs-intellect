@@ -1,0 +1,132 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import Breadcrumb from "./Breadcrumb.astro";
+import CtaBand from "./CtaBand.astro";
+import FaqList from "./FaqList.astro";
+import RussiaBlock from "./RussiaBlock.astro";
+import Layout from "../layouts/Layout.astro";
+import { landingFaq, LANDING_BY_SLUG, type Landing } from "../lib/copy/landings";
+import { HOME } from "../lib/copy/home";
+import { compactPath, locText, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  landing: Landing;
+}
+
+const { locale, landing } = Astro.props;
+const t = (value: { en: string; ru: string }) => locText(locale, value);
+const home = compactPath(getRelativeLocaleUrl(locale, "/"));
+const path = compactPath(getRelativeLocaleUrl(locale, `/${landing.slug}`));
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+const copy = HOME[locale];
+const faq = landingFaq(landing, locale);
+const ctaLabel =
+  landing.cta === "idea" ? (locale === "ru" ? "Обсудить идею" : "Talk about the idea") : copy.ctaPrimary;
+const secondaryLabel = landing.cta === "idea" ? copy.ctaSecondary : copy.ctaSecondary;
+const schema = faq.length
+  ? [
+      {
+        "@type": "FAQPage",
+        mainEntity: faq.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
+      },
+    ]
+  : [];
+---
+
+<Layout locale={locale} title={t(landing.title)} description={t(landing.description)} schema={schema}>
+  <div class="wrap py-16 md:pb-8 md:pt-24">
+    <Breadcrumb
+      items={[
+        { href: home, label: locale === "ru" ? "Главная" : "Home" },
+        { href: path, label: t(landing.nav) },
+      ]}
+    />
+    {landing.kicker && <p class="eyebrow mt-8">{t(landing.kicker)}</p>}
+    <h1 class="mt-4 max-w-4xl text-4xl leading-tight md:text-5xl">{t(landing.h1)}</h1>
+    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">{t(landing.lead)}</p>
+    <div class="mt-8 flex flex-wrap items-center gap-5">
+      <a href={contacts} class="btn-primary">{ctaLabel}</a>
+      <a href={`${contacts}#checkup`} class="btn-ghost">{secondaryLabel}</a>
+    </div>
+  </div>
+
+  {
+    landing.sections.map((section) => (
+      <section class="border-t border-line">
+        <div class="wrap py-16 md:py-20">
+          <h2 class="max-w-3xl text-2xl md:text-4xl">{t(section.h2)}</h2>
+          {section.body && <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{t(section.body)}</p>}
+          {section.items && (
+            <ol
+              class:list={[
+                "mt-12",
+                section.numbered
+                  ? "grid gap-8 md:grid-cols-2 md:gap-x-12"
+                  : "grid gap-0 sm:grid-cols-2 md:grid-cols-2",
+              ]}
+            >
+              {section.items.map((item, index) => (
+                <li
+                  class:list={[
+                    "border-t border-line py-6",
+                    !section.numbered && "md:pr-8",
+                  ]}
+                >
+                  {section.numbered && (
+                    <p class="font-display text-2xl text-accent">{String(index + 1).padStart(2, "0")}</p>
+                  )}
+                  <h3 class:list={["text-lg", section.numbered && "mt-3"]}>{t(item.title)}</h3>
+                  <p class="mt-2 text-sm leading-6 text-muted">{t(item.text)}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  {landing.showRussia && locale === "ru" && <RussiaBlock locale={locale} />}
+
+  {
+    landing.related.length > 0 && (
+      <section class="border-t border-line">
+        <div class="wrap py-16">
+          <h2 class="text-2xl md:text-3xl">{locale === "ru" ? "Читать дальше" : "Related"}</h2>
+          <ul class="mt-8 grid gap-0 sm:grid-cols-2">
+            {landing.related.map((slug) => {
+              const related = LANDING_BY_SLUG[slug];
+              if (!related) return null;
+              const href = compactPath(getRelativeLocaleUrl(locale, `/${related.slug}`));
+              return (
+                <li class="border-t border-line py-5 pr-6">
+                  <a href={href} class="text-lg text-ink no-underline hover:text-primary">
+                    {t(related.nav)}
+                  </a>
+                  <p class="mt-2 text-sm leading-6 text-muted">{t(related.description)}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <FaqList items={faq} heading={copy.faqH2} />
+
+  <CtaBand
+    h2={copy.finalH2}
+    text={copy.final}
+    primaryHref={contacts}
+    primaryLabel={ctaLabel}
+    secondaryHref={`${contacts}#checkup`}
+    secondaryLabel={secondaryLabel}
+    note={copy.checkup}
+  />
+</Layout>

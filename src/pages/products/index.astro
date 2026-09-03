@@ -1,0 +1,8 @@
+---
+import ProductsPage from "../../components/ProductsPage.astro";
+import { getServices } from "../../lib/db";
+
+const services = await getServices();
+---
+
+<ProductsPage locale="en" services={services} />

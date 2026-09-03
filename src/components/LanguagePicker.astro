@@ -1,0 +1,38 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { localeFromAstro, pathWithoutLocale, RU_ONLY_PATHS, compactPath } from "../lib/i18n";
+
+const locale = localeFromAstro(Astro.currentLocale);
+const rest = pathWithoutLocale(Astro.url.pathname);
+const enHref = compactPath(RU_ONLY_PATHS.has(rest) ? "/" : getRelativeLocaleUrl("en", rest === "/" ? "/" : rest));
+const ruHref = compactPath(rest === "/" ? "/ru" : getRelativeLocaleUrl("ru", rest));
+---
+
+<div class="flex items-center gap-4 text-xs" role="group" aria-label="Language">
+  <a
+    href={enHref}
+    hreflang="en"
+    lang="en"
+    data-locale-manual="en"
+    class:list={[
+      "no-underline",
+      locale === "en" ? "text-ink" : "text-muted hover:text-ink",
+    ]}
+    aria-current={locale === "en" ? "true" : undefined}
+  >
+    EN
+  </a>
+  <a
+    href={ruHref}
+    hreflang="ru"
+    lang="ru"
+    data-locale-manual="ru"
+    class:list={[
+      "no-underline",
+      locale === "ru" ? "text-ink" : "text-muted hover:text-ink",
+    ]}
+    aria-current={locale === "ru" ? "true" : undefined}
+  >
+    RU
+  </a>
+</div>

@@ -1,0 +1,40 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import type { Locale } from "../lib/i18n";
+import { compactPath } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+const isRu = locale === "ru";
+---
+
+<section class="border-t border-line" aria-labelledby="russia-stack">
+  <div class="wrap py-20">
+    <h2 id="russia-stack" class="max-w-3xl text-2xl md:text-4xl">
+      {isRu ? "Технологии, рассчитанные на российский бизнес" : "Technology designed for the market you operate in"}
+    </h2>
+    <p class="mt-5 max-w-3xl text-base leading-7 text-muted">
+      {
+        isRu
+          ? "При разработке решений для российских компаний мы учитываем существующий IT-ландшафт, требования к информационной безопасности, доступность российских облачных и AI-сервисов и необходимость долгосрочной поддержки. В зависимости от задачи используем российские технологические платформы, международные технологии и их комбинации."
+          : "We design durable technology around the IT landscape, security requirements, and infrastructure of the specific market. Depending on the task we use local platforms, international technology, or a combination — availability, stability, and long-term support matter as much as features."
+      }
+    </p>
+    <p class="mt-4 max-w-3xl text-base leading-7 text-muted">
+      {
+        isRu
+          ? "Технологическая независимость без потери бизнес-эффективности — одна из возможностей российского контура, а не вся ценность продукта."
+          : "Independence from a single vendor is a design option, not the whole value of the work."
+      }
+    </p>
+    <p class="mt-8">
+      <a href={contacts} class="text-sm text-primary no-underline">
+        {isRu ? "Обсудить контур" : "Discuss the landscape"}
+      </a>
+    </p>
+  </div>
+</section>

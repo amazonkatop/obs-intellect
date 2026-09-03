@@ -1,0 +1,97 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import Breadcrumb from "./Breadcrumb.astro";
+import CtaBand from "./CtaBand.astro";
+import PersonCard from "./PersonCard.astro";
+import Layout from "../layouts/Layout.astro";
+import { HOME, WHY_ROLES } from "../lib/copy/home";
+import { compactPath, locText, type Locale } from "../lib/i18n";
+import { TEAM } from "../lib/team";
+import { SITE } from "../lib/types";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isRu = locale === "ru";
+const copy = HOME[locale];
+const home = compactPath(getRelativeLocaleUrl(locale, "/"));
+const about = compactPath(getRelativeLocaleUrl(locale, "/about"));
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+const origin = Astro.site?.toString() ?? "";
+const loc = (value: { en: string; ru: string }) => locText(locale, value);
+const schema = TEAM.map((member) => ({
+  "@type": "Person",
+  "@id": `${origin}${isRu ? "ru/about" : "about"}#${member.id}`,
+  name: isRu ? member.nameRu : member.nameEn,
+  jobTitle: isRu ? member.roleRu : member.roleEn,
+  image: new URL(member.photo.src, origin).toString(),
+  worksFor: { "@id": `${origin}#org` },
+  description: isRu ? member.bioRu : member.bioEn,
+}));
+---
+
+<Layout
+  locale={locale}
+  title={isRu ? "Команда" : "Team"}
+  description={
+    isRu
+      ? "Команда ООО «ОБС Интеллект»: аналитики, продукт, AI, разработка, интеграция и поддержка — одна команда от диагностики до эксплуатации. Основатель Валентина Мочалова."
+      : "OBS Intellect team: analysts, product, AI, engineering, integration, and support — one team from diagnosis to operations. Founder Valentina Mochalova."
+  }
+  schema={schema}
+>
+  <div class="wrap py-16 md:py-24">
+    <Breadcrumb
+      items={[
+        { href: home, label: isRu ? "Главная" : "Home" },
+        { href: about, label: isRu ? "Команда" : "Team" },
+      ]}
+    />
+    <p class="eyebrow mt-8">{isRu ? "Команда" : "Team"}</p>
+    <h1 class="mt-4 max-w-4xl text-4xl leading-tight md:text-6xl">
+      {isRu ? "Партнёр по трансформации бизнеса, а не студия разработки." : "A business transformation partner, not a development shop."}
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+      {
+        isRu
+          ? `Мы не продаём технологии. Мы решаем бизнес-задачи технологиями. ${SITE.legalShort} публикует людей, потому что собственник среднего бизнеса спрашивает, кто останется с процессом после презентации.`
+          : `We do not sell technology. We solve business problems with technology. ${SITE.name} publishes the people because a mid-market owner asks who will still be there after the pitch.`
+      }
+    </p>
+
+    <div id="team" class="mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
+      {TEAM.map((member) => <PersonCard member={member} locale={locale} />)}
+    </div>
+
+    <section class="mt-20 border-t border-line pt-16">
+      <h2 class="text-2xl md:text-3xl">{copy.whyH2}</h2>
+      <ul class="mt-10 grid gap-0 sm:grid-cols-2 md:grid-cols-3">
+        {
+          WHY_ROLES.map((role) => (
+            <li class="border-t border-line py-6 pr-6">
+              <h3 class="text-lg">{loc(role.title)}</h3>
+              <p class="mt-2 text-sm leading-6 text-muted">{loc(role.text)}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="mt-16 border-t border-line pt-16">
+      <h2 class="text-2xl md:text-3xl">{copy.differentiatorH2}</h2>
+      <p class="mt-4 max-w-3xl leading-7 text-muted">{copy.differentiator}</p>
+      <p class="mt-4 max-w-3xl leading-7 text-muted">{copy.manifesto}</p>
+    </section>
+  </div>
+
+  <CtaBand
+    h2={copy.finalH2}
+    text={copy.final}
+    primaryHref={contacts}
+    primaryLabel={copy.ctaPrimary}
+    secondaryHref={`${contacts}#checkup`}
+    secondaryLabel={copy.ctaSecondary}
+  />
+</Layout>

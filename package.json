@@ -1,0 +1,28 @@
+{
+  "name": "nexora",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "International AI implementation studio site. Static HTML via Astro SSG, content from Timeweb Cloud PostgreSQL at build time.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node scripts/serve-static.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "@tailwindcss/vite": "^4.1.13",
+    "astro": "^5.13.7",
+    "pg": "^8.23.0",
+    "tailwindcss": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "typescript": "^5.9.2"
+  }
+}

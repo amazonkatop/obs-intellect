@@ -1,0 +1,12 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { compactPath, localeFromAstro } from "../lib/i18n";
+
+const locale = localeFromAstro(Astro.currentLocale);
+const home = compactPath(getRelativeLocaleUrl(locale, "/"));
+const label = locale === "ru" ? "ОБС Интеллект" : "OBS Intellect";
+---
+
+<a href={home} class="font-display text-base font-bold leading-none text-ink no-underline sm:text-lg" aria-label={label}>
+  {label}
+</a>

@@ -1,0 +1,107 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { FOOTER_BUILD, FOOTER_PRACTICE } from "../lib/copy/nav";
+import { HOME } from "../lib/copy/home";
+import { compactPath, IT_ACCREDITATION_PATH, localeFromAstro } from "../lib/i18n";
+import { SITE } from "../lib/types";
+
+const locale = localeFromAstro(Astro.currentLocale);
+const year = new Date().getFullYear();
+const copy = HOME[locale];
+const locPath = (href: string) => compactPath(getRelativeLocaleUrl(locale, href));
+---
+
+<footer class="border-t border-line">
+  <div class="wrap grid gap-12 py-20 md:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <p class="font-display text-lg text-ink">{SITE.legalShort}</p>
+      <p class="mt-1 text-sm text-muted">{locale === "ru" ? "ОБС Интеллект" : SITE.name}</p>
+      <p class="mt-4 max-w-sm text-sm leading-6 text-muted">
+        {locale === "ru" ? SITE.descriptionRu : SITE.description}
+      </p>
+      <p class="mt-4 text-sm leading-6 text-muted">{copy.formula}</p>
+    </div>
+
+    <div>
+      <p class="text-sm text-muted">{locale === "ru" ? "Практика" : "Practice"}</p>
+      <ul class="mt-4 space-y-3 text-sm">
+        {
+          FOOTER_PRACTICE[locale].map((link) => (
+            <li>
+              <a class="text-ink no-underline hover:text-primary" href={locPath(link.href)}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <p class="text-sm text-muted">{locale === "ru" ? "Продукт" : "Build"}</p>
+      <ul class="mt-4 space-y-3 text-sm">
+        {
+          FOOTER_BUILD[locale].map((link) => (
+            <li>
+              <a class="text-ink no-underline hover:text-primary" href={locPath(link.href)}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={locPath("/about")}>
+            {locale === "ru" ? "Команда" : "Team"}
+          </a>
+        </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={locPath("/cases")}>
+            {locale === "ru" ? "Кейсы" : "Cases"}
+          </a>
+        </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={locPath("/contacts")}>
+            {locale === "ru" ? "Контакты" : "Contact"}
+          </a>
+        </li>
+        <li>
+          <a class="text-ink no-underline hover:text-primary" href={IT_ACCREDITATION_PATH}>
+            {locale === "ru" ? "Сведения об ИТ-организации (Минцифры)" : "IT organization page (RU)"}
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <aside aria-label={locale === "ru" ? "Зарезервировано под ИИ-чат" : "Reserved for future AI chat"}>
+      <p class="text-sm text-ink">{locale === "ru" ? "AI Business Check-up" : "AI Business Check-up"}</p>
+      <p class="mt-3 text-sm leading-6 text-muted">
+        {
+          locale === "ru"
+            ? "Чат-ассистент появится здесь. Сейчас первичная диагностика — через форму на странице контактов, без регистрации и капчи."
+            : "A chat assistant will live here. For now the first diagnosis is the contact form — no login, no captcha."
+        }
+      </p>
+      <p class="mt-4">
+        <a href={`${locPath("/contacts")}#checkup`} class="text-sm text-primary no-underline">
+          {copy.ctaPrimary}
+        </a>
+      </p>
+      <p class="mt-6">
+        <a class="text-sm text-ink no-underline hover:text-primary" href={`mailto:${SITE.email}`}>
+          {SITE.email}
+        </a>
+      </p>
+    </aside>
+  </div>
+  <div class="wrap border-t border-line py-6 text-xs leading-5 text-muted">
+    <p>© {year} {SITE.legalShort}</p>
+    {
+      locale === "en" && (
+        <p class="mt-2 max-w-3xl">
+          English version is provided for informational purposes only; the Russian version is legally
+          binding.
+        </p>
+      )
+    }
+  </div>
+</footer>

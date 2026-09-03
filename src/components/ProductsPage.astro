@@ -1,0 +1,112 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import Breadcrumb from "./Breadcrumb.astro";
+import CtaBand from "./CtaBand.astro";
+import ServiceCard from "./ServiceCard.astro";
+import Layout from "../layouts/Layout.astro";
+import { CHANGE_OFFERS, HOME } from "../lib/copy/home";
+import { compactPath, IT_ACCREDITATION_PATH, locText, type Locale } from "../lib/i18n";
+import type { ServiceRecord } from "../lib/types";
+
+interface Props {
+  locale: Locale;
+  services: ServiceRecord[];
+}
+
+const { locale, services } = Astro.props;
+const isRu = locale === "ru";
+const copy = HOME[locale];
+const home = compactPath(getRelativeLocaleUrl(locale, "/"));
+const products = compactPath(getRelativeLocaleUrl(locale, "/products"));
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+const catalogue = services.filter((item) => !item.is_saas);
+const saas = services.filter((item) => item.is_saas);
+const loc = (value: { en: string; ru: string }) => locText(locale, value);
+---
+
+<Layout
+  locale={locale}
+  title={isRu ? "Что мы можем изменить в вашем бизнесе" : "What we can change in your business"}
+  description={
+    isRu
+      ? "Бизнес-аудит, AI и автоматизация, custom software, интеграция, аналитика и цифровые продукты. Базовые тарифы и собственный SaaS OBS Pulse на стадии НИОКР."
+      : "Business audit, AI and automation, custom software, integration, analytics, and digital products. Base tariffs and OBS Pulse SaaS in R&D."
+  }
+>
+  <div class="wrap py-16 md:py-24">
+    <Breadcrumb
+      items={[
+        { href: home, label: isRu ? "Главная" : "Home" },
+        { href: products, label: isRu ? "Продукты" : "Products" },
+      ]}
+    />
+    <p class="eyebrow mt-8">{isRu ? "Продукты и тарифы" : "Products and tariffs"}</p>
+    <h1 class="mt-4 max-w-3xl text-4xl leading-tight md:text-5xl">{copy.changeH2}</h1>
+    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
+      {
+        isRu
+          ? "Это не каталог «разработка / AI / интеграция / консалтинг». Ниже — изменения в бизнесе. Базовые тарифы на первый согласованный контур; итоговые условия следуют из аудита. Те же сведения на русском — на странице сведений об ИТ-организации."
+          : "This is not a catalogue of development / AI / integration / consulting. Below are the changes in the business. Base tariffs cover a defined first slice; commercial terms follow the audit."
+      }
+    </p>
+    {
+      isRu && (
+        <p class="mt-3 text-sm text-muted">
+          Для аккредитации тарифы также опубликованы на
+          <a href={IT_ACCREDITATION_PATH} class="text-primary">странице сведений об ИТ-организации</a>.
+        </p>
+      )
+    }
+
+    <ul class="mt-12">
+      {
+        CHANGE_OFFERS.map((offer) => (
+          <li class="border-t border-line py-8">
+            <a
+              href={compactPath(getRelativeLocaleUrl(locale, offer.href))}
+              class="text-xl text-ink no-underline hover:text-primary md:text-2xl"
+            >
+              {loc(offer.title)}
+            </a>
+            <p class="mt-3 max-w-3xl text-base leading-7 text-muted">{loc(offer.text)}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="mt-20 text-2xl md:text-3xl">{isRu ? "Базовые тарифы" : "Base tariffs"}</h2>
+    <p class="mt-4 max-w-3xl text-base leading-7 text-muted">
+      {
+        isRu
+          ? "Минимальная стоимость первого согласованного контура. Детализация калькуляции по заказчику на сайте не раскрывается."
+          : "Minimum cost of a defined first slice. Client-level calculations are not published."
+      }
+    </p>
+    <div class="mt-4">
+      {catalogue.map((service, index) => <ServiceCard service={service} index={index} />)}
+    </div>
+
+    <h2 class="mt-16 text-2xl md:text-3xl">
+      {isRu ? "Собственный SaaS (научно-исследовательские работы)" : "Own SaaS product (research and development)"}
+    </h2>
+    <p class="mt-4 max-w-3xl text-base leading-7 text-muted">
+      {
+        isRu
+          ? "OBS Pulse — продукт линейки цифрового двойника бизнеса. Исключительные права принадлежат организации. Плановый способ предоставления прав — возмездный удалённый доступ (SaaS). В реестр российского ПО пока не включён. Архитектура платформы как IP на сайте не раскрывается."
+          : "OBS Pulse is the digital-twin product line. Exclusive rights stay with the company. Planned access: paid remote subscription (SaaS). The platform architecture is IP and is not published."
+      }
+    </p>
+    <div class="mt-4">
+      {saas.map((service, index) => <ServiceCard service={service} index={index} />)}
+    </div>
+  </div>
+
+  <CtaBand
+    h2={copy.finalH2}
+    text={copy.final}
+    primaryHref={contacts}
+    primaryLabel={copy.ctaPrimary}
+    secondaryHref={`${contacts}#checkup`}
+    secondaryLabel={copy.ctaSecondary}
+  />
+</Layout>

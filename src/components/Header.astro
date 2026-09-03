@@ -1,0 +1,65 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import LanguagePicker from "./LanguagePicker.astro";
+import Logo from "./Logo.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import { HEADER_LINKS } from "../lib/copy/nav";
+import { HOME } from "../lib/copy/home";
+import { compactPath, IT_ACCREDITATION_PATH, localeFromAstro } from "../lib/i18n";
+
+const locale = localeFromAstro(Astro.currentLocale);
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const copy = HOME[locale];
+const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
+
+const links = [
+  ...HEADER_LINKS[locale].map((link) => ({
+    href: compactPath(getRelativeLocaleUrl(locale, link.href)),
+    label: link.label,
+  })),
+  ...(locale === "ru"
+    ? [{ href: IT_ACCREDITATION_PATH, label: "Сведения" }]
+    : []),
+];
+---
+
+<header class="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-sm">
+  <div class="wrap flex items-center justify-between gap-6 py-4 md:py-5">
+    <Logo />
+
+    <input id="nav-toggle" class="peer sr-only" type="checkbox" />
+
+    <nav
+      class="site-nav absolute left-0 right-0 top-[3.75rem] z-20 hidden flex-col gap-4 border-b border-line bg-canvas px-8 py-5 peer-checked:flex md:static md:flex md:flex-1 md:flex-row md:items-center md:justify-end md:gap-5 lg:gap-7 md:border-0 md:bg-transparent md:p-0"
+      aria-label={locale === "ru" ? "Основная навигация" : "Primary"}
+    >
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "text-sm no-underline hover:text-primary",
+              path === link.href.replace(/\/$/, "") ? "text-primary" : "text-muted",
+            ]}
+            aria-current={path === link.href.replace(/\/$/, "") ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a href={contacts} class="btn-primary w-fit md:hidden">{copy.ctaHeader}</a>
+    </nav>
+
+    <div class="flex items-center gap-3 lg:gap-4">
+      <a href={contacts} class="btn-primary hidden md:inline-block">{copy.ctaHeader}</a>
+      <LanguagePicker />
+      <ThemeToggle />
+      <label
+        for="nav-toggle"
+        class="cursor-pointer px-2 py-1 text-xs text-muted md:hidden"
+      >
+        {locale === "ru" ? "Меню" : "Menu"}
+      </label>
+    </div>
+  </div>
+</header>

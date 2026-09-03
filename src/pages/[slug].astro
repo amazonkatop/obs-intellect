@@ -1,0 +1,15 @@
+---
+import LandingPage from "../components/LandingPage.astro";
+import { LANDING_SLUGS, LANDING_BY_SLUG } from "../lib/copy/landings";
+
+export function getStaticPaths() {
+  return LANDING_SLUGS.map((slug) => ({
+    params: { slug },
+    props: { landing: LANDING_BY_SLUG[slug] },
+  }));
+}
+
+const { landing } = Astro.props;
+---
+
+<LandingPage locale="en" landing={landing} />

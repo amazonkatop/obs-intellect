@@ -1,0 +1,413 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { okvedTitles, techStack } from "../lib/fallback";
+import { getLegalInfo, getServices } from "../lib/db";
+import { IT_ACCREDITATION_PATH } from "../lib/i18n";
+
+const legal = await getLegalInfo();
+const services = await getServices();
+const updated = new Date(legal.updated_at).toLocaleDateString("ru-RU", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+const saas = services.filter((item) => item.is_saas);
+const works = services.filter((item) => !item.is_saas);
+const primaryOkved = "62.01";
+const okvedCodes = [primaryOkved, ...(legal.okved_codes ?? []).filter((code) => code !== primaryOkved)];
+const pageUrl = IT_ACCREDITATION_PATH;
+
+const toc = [
+  { href: "#requisites", label: "Реквизиты", ref: "п. 2 «а»–«е» приказа № 511" },
+  { href: "#okved", label: "Основной код ОКВЭД", ref: "п. 2 «г»" },
+  { href: "#order-449", label: "Коды видов ИТ-деятельности", ref: "п. 2 «ж», приказ № 449" },
+  { href: "#activity", label: "Описание товаров, работ и услуг", ref: "п. 2 «з»" },
+  { href: "#prices", label: "Стоимость", ref: "п. 2 «и»" },
+  { href: "#saas", label: "Исключительные права и способы предоставления", ref: "п. 3" },
+  { href: "#stack", label: "Языки и инструменты разработки", ref: "п. 4" },
+  { href: "#registry", label: "Реестр российского ПО", ref: "п. 5" },
+  { href: "#ofd", label: "Оператор фискальных данных", ref: "п. 6" },
+  { href: "#access", label: "Режим доступа к сведениям", ref: "п. 7" },
+];
+---
+
+<Layout
+  locale="ru"
+  title="Сведения об организации, осуществляющей деятельность в области информационных технологий"
+  description={`${legal.full_name}: реквизиты, основной ОКВЭД 62.01, коды видов ИТ-деятельности по приказу Минцифры № 449, описание работ и услуг, стоимость, исключительные права на программу для ЭВМ, стек разработки. Страница доступна круглосуточно без регистрации.`}
+>
+  <article class="wrap legal py-12 md:py-16">
+    <header class="border-b border-line pb-8">
+      <p class="text-sm text-muted">
+        Официальные сведения для государственной аккредитации. Постановление Правительства Российской
+        Федерации от 30 сентября 2022 г. № 1729. Приказ Минцифры России от 02.06.2025 № 511 (вступил в
+        силу 21 ноября 2025 г.)
+      </p>
+      <h1 class="mt-4 text-3xl leading-tight md:text-4xl">
+        Сведения об организации, осуществляющей деятельность в области информационных технологий
+      </h1>
+      <p class="mt-4 text-base leading-7 text-muted">
+        Настоящая страница размещена на официальном сайте организации в информационно-телекоммуникационной
+        сети «Интернет» и доступна круглосуточно по прямой ссылке без регистрации, авторизации, пароля,
+        капчи (проверки, что запрашивает человек, а не программа) и без передачи персональных данных.
+        Сведения размещены в разметке самой страницы, а не только в прикреплённом файле.
+      </p>
+      <p class="mt-3 text-sm text-muted">
+        Адрес страницы для указания в заявлении: <code class="text-ink">{pageUrl}</code>
+      </p>
+      <p class="mt-2 text-sm text-muted">Дата актуализации сведений: {updated}</p>
+    </header>
+
+    <nav class="mt-10 border border-line bg-surface p-6" aria-labelledby="toc">
+      <h2 id="toc" class="text-lg">Содержание страницы по приказу № 511</h2>
+      <ol class="mt-4 space-y-2 text-sm">
+        {
+          toc.map((item) => (
+            <li>
+              <a class="text-primary no-underline hover:underline" href={item.href}>
+                {item.label}
+              </a>
+              <span class="text-muted"> — {item.ref}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <section class="mt-12" aria-labelledby="requisites">
+      <h2 id="requisites" class="text-2xl">Реквизиты организации</h2>
+      <p class="mt-3 text-sm text-muted">
+        Полное наименование приведено в формулировке, соответствующей сведениям единого государственного
+        реестра юридических лиц, без замены на аббревиатуру.
+      </p>
+      <dl class="mt-6 divide-y divide-line border-y border-line">
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Полное наименование</dt>
+          <dd class="font-medium">{legal.full_name}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Сокращённое наименование</dt>
+          <dd>{legal.short_name}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Идентификационный номер налогоплательщика (ИНН)</dt>
+          <dd>{legal.inn}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Код причины постановки на учёт (КПП)</dt>
+          <dd>{legal.kpp}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Основной государственный регистрационный номер (ОГРН)</dt>
+          <dd>{legal.ogrn}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Адрес организации в пределах места нахождения</dt>
+          <dd>{legal.legal_address}</dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Почтовый адрес</dt>
+          <dd>
+            Совпадает с адресом организации в пределах места нахождения: {legal.legal_address}
+          </dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Адрес электронной почты</dt>
+          <dd>
+            <a class="text-primary" href={`mailto:${legal.email}`}>{legal.email}</a>
+          </dd>
+        </div>
+        <div class="grid gap-1 px-5 py-4 md:grid-cols-[16rem_1fr]">
+          <dt class="text-sm text-muted">Номер телефона</dt>
+          <dd>
+            <a class="text-ink" href={`tel:${legal.phone.replace(/[^\d+]/g, "")}`}>{legal.phone}</a>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="mt-12" aria-labelledby="okved">
+      <h2 id="okved" class="text-2xl">Основной код Общероссийского классификатора видов экономической деятельности</h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Основной вид экономической деятельности организации — код <strong>62.01</strong>
+        ({okvedTitles["62.01"]}). Код относится к профильной деятельности в области информационных
+        технологий для государственной аккредитации.
+      </p>
+      <table class="mt-6 w-full border-collapse text-left text-sm">
+        <caption class="sr-only">Перечень кодов ОКВЭД организации</caption>
+        <thead>
+          <tr class="border-b border-line bg-panel">
+            <th class="px-4 py-3 font-semibold" scope="col">Код</th>
+            <th class="px-4 py-3 font-semibold" scope="col">Наименование</th>
+            <th class="px-4 py-3 font-semibold" scope="col">Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            okvedCodes.map((code) => (
+              <tr class="border-b border-line">
+                <td class="px-4 py-3">{code}</td>
+                <td class="px-4 py-3">{okvedTitles[code] ?? "См. Общероссийский классификатор"}</td>
+                <td class="px-4 py-3">{code === primaryOkved ? "Основной" : "Дополнительный"}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mt-12" aria-labelledby="order-449">
+      <h2 id="order-449" class="text-2xl">
+        Коды видов деятельности в области информационных технологий
+      </h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Коды приведены в соответствии с перечнем видов деятельности в области информационных
+        технологий, утверждённым приказом Министерства цифрового развития, связи и массовых коммуникаций
+        Российской Федерации от 11 мая 2023 г. № 449.
+      </p>
+      <ol class="mt-6 space-y-4">
+        {
+          legal.it_activity_codes.map((item) => (
+            <li class="border-t border-line py-5">
+              <h3 class="text-lg text-primary">Код {item.code}</h3>
+              <p class="mt-2 leading-6 text-ink">{item.title}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="mt-12" aria-labelledby="activity">
+      <h2 id="activity" class="text-2xl">Описание реализуемых товаров, выполняемых работ и оказываемых услуг</h2>
+      <p class="mt-4 leading-7 text-muted">
+        Организация анализирует действующий бизнес заказчика, переводит бизнес-процессы в цифровую модель,
+        выявляет узкие места и точки роста, формирует технологическую стратегию, проектирует, разрабатывает,
+        внедряет и сопровождает программы для электронных вычислительных машин и информационные системы.
+        Для ускорения аналитики и разработки используется собственная платформа, предоставляемая как
+        программное обеспечение через сеть «Интернет» (SaaS — software as a service, программное обеспечение
+        как услуга) с инструментами искусственного интеллекта (линейка OBS Pulse, стадия научно-исследовательских
+        и опытно-конструкторских работ). Организация сама реализует изменения в информационной инфраструктуре
+        заказчика и сопровождает систему после запуска.
+      </p>
+      <p class="mt-4 leading-7 text-muted">
+        Для стартапов выполняется исследование рынка, формирование бизнес-модели, проверка гипотез и разработка
+        минимально жизнеспособного продукта (MVP — minimum viable product, первая промышленная версия продукта
+        с ограниченным набором функций, достаточным для проверки гипотезы).
+      </p>
+      <h3 class="mt-8 text-xl">Реализуемые направления</h3>
+      <ul class="mt-4 list-disc space-y-2 pl-5 leading-7 text-muted">
+        <li>Аудит бизнеса, перевод процессов в цифровую модель и подготовка карты изменений.</li>
+        <li>
+          Оценка процессов, в которых искусственный интеллект даёт измеримый эффект (AI-аудит —
+          artificial intelligence audit, аудит готовности к искусственному интеллекту).
+        </li>
+        <li>
+          Внедрение искусственного интеллекта в бизнес-процессы: помощники, программные агенты,
+          автоматизация, генерация ответов с опорой на документы организации (RAG — retrieval-augmented
+          generation, генерация с поиском по документам заказчика).
+        </li>
+        <li>
+          Разработка корпоративных систем, веб-приложений, программ, предоставляемых как услуга через сеть
+          «Интернет», и цифровых продуктов.
+        </li>
+        <li>
+          Сопряжение с действующими системами учёта: системы управления взаимоотношениями с клиентами
+          (CRM), системы планирования ресурсов предприятия (ERP), программа «1С», системы деловой аналитики
+          (BI — business intelligence), программные интерфейсы (API — application programming interface),
+          телефония, документы.
+        </li>
+        <li>Деловая аналитика: витрины данных, прогнозирование, поиск аномалий.</li>
+        <li>Собственный облачный продукт OBS Pulse на стадии научно-исследовательских работ.</li>
+      </ul>
+    </section>
+
+    <section class="mt-12" aria-labelledby="prices">
+      <h2 id="prices" class="text-2xl">Сведения о стоимости товаров, работ и услуг</h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Ниже приведены базовые тарифы: минимальная стоимость первого согласованного контура работ.
+        Итоговая цена договора определяется после аудита и зависит от объёма сопряжений и качества исходных
+        данных. Порядок расчёта: фиксированная стоимость аудита; стоимость разработки и внедрения —
+        по объёму трудозатрат после утверждения технического задания. Сведения публикуются с учётом режима
+        коммерческой тайны: детализация калькуляции по конкретному заказчику на сайте не раскрывается.
+      </p>
+      <table class="mt-6 w-full border-collapse text-left text-sm">
+        <caption class="sr-only">Базовые тарифы</caption>
+        <thead>
+          <tr class="border-b border-line bg-panel">
+            <th class="px-4 py-3 font-semibold" scope="col">Работа / услуга / продукт</th>
+            <th class="px-4 py-3 font-semibold" scope="col">Базовая стоимость</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            works.map((item) => (
+              <tr class="border-b border-line">
+                <th class="px-4 py-3 font-medium" scope="row">
+                  {item.title_ru}
+                </th>
+                <td class="px-4 py-3 text-accent">{item.price_ru}</td>
+              </tr>
+            ))
+          }
+          {
+            saas.map((item) => (
+              <tr class="border-b border-line">
+                <th class="px-4 py-3 font-medium" scope="row">
+                  {item.title_ru}
+                </th>
+                <td class="px-4 py-3 text-accent">{item.price_ru}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="mt-4 text-sm leading-6 text-muted">
+        Заключение договора: заявка по адресу электронной почты {legal.email} либо через форму на странице
+        <a class="text-primary" href="/ru/contacts">контактов</a>. Форма не требует регистрации и не применяет капчу.
+      </p>
+    </section>
+
+    <section class="mt-12" aria-labelledby="saas">
+      <h2 id="saas" class="text-2xl">
+        Исключительные права на программы для электронных вычислительных машин и способы предоставления прав
+      </h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Сведения размещены в соответствии с пунктом 3 дополнительных требований приказа № 511: организация
+        является правообладателем исключительных прав на программу для электронных вычислительных машин,
+        создаваемую силами организации.
+      </p>
+      {
+        saas.map((item) => (
+          <div class="mt-6">
+            <h3 class="text-xl">{item.title_ru}</h3>
+            <p class="mt-3 leading-7 text-muted">{item.description_ru}</p>
+            <dl class="mt-6 space-y-3 text-sm">
+              <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+                <dt class="text-muted">Наличие исключительных прав</dt>
+                <dd>
+                  Исключительные права на программу для электронных вычислительных машин «OBS Pulse»
+                  принадлежат {legal.full_name}. Программа создаётся силами организации. Доля участия
+                  третьих лиц, которая влияла бы на принадлежность исключительного права, отсутствует.
+                </dd>
+              </div>
+              <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+                <dt class="text-muted">Способ предоставления права использования</dt>
+                <dd>
+                  Планируется предоставление удалённого доступа через информационно-телекоммуникационную
+                  сеть «Интернет» на условиях возмездной подписки (программное обеспечение как услуга).
+                  Право использования будет предоставляться по лицензионному договору (в том числе путём
+                  присоединения к оферте). Лицензионный договор и оферта будут опубликованы на настоящем
+                  сайте до начала коммерческой эксплуатации.
+                </dd>
+              </div>
+              <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+                <dt class="text-muted">Как получить доступ или право использования</dt>
+                <dd>
+                  До начала коммерческой эксплуатации доступ третьим лицам не предоставляется. После
+                  публикации оферты право использования можно будет получить, направив заявку на адрес
+                  {legal.email} либо оформив подписку по опубликованному договору. Сейчас направление —
+                  научно-исследовательские и опытно-конструкторские работы.
+                </dd>
+              </div>
+              <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+                <dt class="text-muted">Плановая стоимость доступа</dt>
+                <dd>{item.price_ru}</dd>
+              </div>
+            </dl>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="mt-12" aria-labelledby="stack">
+      <h2 id="stack" class="text-2xl">
+        Языки программирования, программное обеспечение и инструменты разработки
+      </h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Перечень применяемых языков программирования, программного обеспечения и наборов правил и
+        инструментов, используемых при проектировании и разработке программ для электронных вычислительных
+        машин, баз данных и сайтов (пункт 4 приказа № 511).
+      </p>
+      <table class="mt-6 w-full border-collapse text-left text-sm">
+        <caption class="sr-only">Стек технологий</caption>
+        <thead>
+          <tr class="border-b border-line bg-panel">
+            <th class="px-4 py-3 font-semibold" scope="col">Средство</th>
+            <th class="px-4 py-3 font-semibold" scope="col">Назначение</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            techStack.map((item) => (
+              <tr class="border-b border-line">
+                <td class="px-4 py-3 font-medium">{item.name}</td>
+                <td class="px-4 py-3 text-muted">{item.noteRu}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mt-12" aria-labelledby="registry">
+      <h2 id="registry" class="text-2xl">
+        Сведения о включении программы в единый реестр российских программ
+      </h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Пункт 5 приказа № 511 применяется, если программа включена в единый реестр российских программ
+        для электронных вычислительных машин и баз данных.
+      </p>
+      <dl class="mt-6 space-y-3 text-sm">
+        <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+          <dt class="text-muted">Статус включения</dt>
+          <dd>
+            По состоянию на дату актуализации настоящей страницы программа для электронных вычислительных
+            машин «OBS Pulse» в единый реестр российских программ для электронных вычислительных машин и
+            баз данных не включена.
+          </dd>
+        </div>
+        <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+          <dt class="text-muted">Идентификатор реестровой записи</dt>
+          <dd>Отсутствует. Регистрационный номер и дата включения не присвоены.</dd>
+        </div>
+        <div class="grid gap-1 md:grid-cols-[16rem_1fr]">
+          <dt class="text-muted">Способы предоставления прав (после включения)</dt>
+          <dd>
+            После включения в реестр на настоящей странице будут указаны регистрационный номер, дата
+            включения, ссылка на запись в реестре и актуальный способ заключения лицензионного договора.
+            До включения действуют сведения раздела об исключительных правах.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="mt-12" aria-labelledby="ofd">
+      <h2 id="ofd" class="text-2xl">Сведения об операторе фискальных данных</h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Пункт 6 приказа № 511 применяется, если организация является оператором фискальных данных.
+      </p>
+      <p class="mt-4 leading-7 text-muted">
+        {legal.full_name} не является оператором фискальных данных. Разрешение на обработку фискальных
+        данных не выдавалось. Номер и дата разрешения отсутствуют.
+      </p>
+    </section>
+
+    <section class="mt-12" aria-labelledby="access">
+      <h2 id="access" class="text-2xl">Режим доступа к сведениям</h2>
+      <p class="mt-3 text-base leading-7 text-muted">
+        Пункт 7 приказа № 511: официальный сайт должен функционировать в круглосуточном режиме и
+        обеспечивать свободный доступ без регистрации и без предоставления персональных данных.
+      </p>
+      <ul class="mt-4 list-disc space-y-2 pl-5 leading-7 text-muted">
+        <li>
+          Страница открывается по адресу <code class="text-ink">{pageUrl}</code> без учётной записи.
+          Прежний адрес <code class="text-ink">/ru/it-organization</code> ведёт к тем же сведениям.
+        </li>
+        <li>Регистрация, авторизация, пароль и капча не применяются.</li>
+        <li>Передача персональных данных для просмотра сведений не требуется.</li>
+        <li>Сведения размещены в разметке самой страницы, а не только в прикреплённом файле.</li>
+        <li>Страница доступна круглосуточно в составе официального сайта организации.</li>
+      </ul>
+    </section>
+  </article>
+</Layout>

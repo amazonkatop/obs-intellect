@@ -1,0 +1,8 @@
+---
+import HomePage from "../components/HomePage.astro";
+import { getCases } from "../lib/db";
+
+const cases = (await getCases()).slice(0, 3);
+---
+
+<HomePage locale="en" cases={cases} />
