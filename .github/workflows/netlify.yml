@@ -1,0 +1,23 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  trigger:
+    name: Trigger Netlify production build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Netlify build from GitHub
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -euo pipefail
+          response="$(curl -sS -X POST \
+            -H "Authorization: Bearer ${NETLIFY_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{"clear_cache":false}' \
+            "https://api.netlify.com/api/v1/sites/${NETLIFY_SITE_ID}/builds")"
+          echo "$response" | python -c 'import json,sys; d=json.load(sys.stdin); print("build_id=" + str(d.get("id","")))'
