@@ -1,5 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
+import { HOME } from "../lib/copy/home";
 import type { Locale } from "../lib/i18n";
 import { compactPath } from "../lib/i18n";
 
@@ -10,11 +11,12 @@ interface Props {
 const { locale } = Astro.props;
 const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 const isRu = locale === "ru";
+const items = HOME[locale].techItems;
 ---
 
 <section class="border-t border-line" aria-labelledby="russia-stack">
   <div class="wrap py-20">
-    <h2 id="russia-stack" class="max-w-3xl text-2xl md:text-4xl">
+    <h2 id="russia-stack" class="page-h2 max-w-3xl">
       {isRu ? "Технологии, рассчитанные на российский бизнес" : "Technology designed for the market you operate in"}
     </h2>
     <p class="mt-5 max-w-3xl text-base leading-7 text-muted">
@@ -31,8 +33,18 @@ const isRu = locale === "ru";
           : "Independence from a single vendor is a design option, not the whole value of the work."
       }
     </p>
+    <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        items.map((item) => (
+          <li class="panel">
+            <p class="badge mb-4">{item.title}</p>
+            <p class="text-base leading-7 text-muted">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
     <p class="mt-8">
-      <a href={contacts} class="text-sm text-primary no-underline">
+      <a href={contacts} class="btn-secondary">
         {isRu ? "Обсудить контур" : "Discuss the landscape"}
       </a>
     </p>

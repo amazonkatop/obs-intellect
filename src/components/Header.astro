@@ -4,13 +4,10 @@ import LanguagePicker from "./LanguagePicker.astro";
 import Logo from "./Logo.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import { HEADER_LINKS } from "../lib/copy/nav";
-import { HOME } from "../lib/copy/home";
 import { compactPath, IT_ACCREDITATION_PATH, localeFromAstro } from "../lib/i18n";
 
 const locale = localeFromAstro(Astro.currentLocale);
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
-const copy = HOME[locale];
-const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 
 const links = [
   ...HEADER_LINKS[locale].map((link) => ({
@@ -47,11 +44,9 @@ const links = [
           </a>
         ))
       }
-      <a href={contacts} class="btn-primary w-fit md:hidden">{copy.ctaHeader}</a>
     </nav>
 
     <div class="flex items-center gap-3 lg:gap-4">
-      <a href={contacts} class="btn-primary hidden md:inline-block">{copy.ctaHeader}</a>
       <LanguagePicker />
       <ThemeToggle />
       <label

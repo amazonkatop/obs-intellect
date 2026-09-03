@@ -40,9 +40,9 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
         { href: products, label: isRu ? "Продукты" : "Products" },
       ]}
     />
-    <p class="eyebrow mt-8">{isRu ? "Продукты и тарифы" : "Products and tariffs"}</p>
-    <h1 class="mt-4 max-w-3xl text-4xl leading-tight md:text-5xl">{copy.changeH2}</h1>
-    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
+    <p class="badge mt-8">{isRu ? "Продукты и тарифы" : "Products and tariffs"}</p>
+    <h1 class="page-h1 mt-4 max-w-3xl">{copy.changeH2}</h1>
+    <p class="mt-6 max-w-3xl text-base leading-7 text-muted md:text-lg md:leading-8">
       {
         isRu
           ? "Это не каталог «разработка / AI / интеграция / консалтинг». Ниже — изменения в бизнесе. Базовые тарифы на первый согласованный контур; итоговые условия следуют из аудита. Те же сведения на русском — на странице сведений об ИТ-организации."
@@ -58,23 +58,23 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
       )
     }
 
-    <ul class="mt-12">
+    <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {
-        CHANGE_OFFERS.map((offer) => (
-          <li class="border-t border-line py-8">
+        CHANGE_OFFERS.map((offer, index) => (
+          <li class:list={[index === 0 && "offer-featured"]}>
             <a
               href={compactPath(getRelativeLocaleUrl(locale, offer.href))}
-              class="text-xl text-ink no-underline hover:text-primary md:text-2xl"
+              class="panel panel-link"
             >
-              {loc(offer.title)}
+              <h3 class="text-xl font-semibold text-ink">{loc(offer.title)}</h3>
+              <p class="mt-3 text-base leading-7 text-muted">{loc(offer.text)}</p>
             </a>
-            <p class="mt-3 max-w-3xl text-base leading-7 text-muted">{loc(offer.text)}</p>
           </li>
         ))
       }
     </ul>
 
-    <h2 class="mt-20 text-2xl md:text-3xl">{isRu ? "Базовые тарифы" : "Base tariffs"}</h2>
+    <h2 class="page-h2 mt-20">{isRu ? "Базовые тарифы" : "Base tariffs"}</h2>
     <p class="mt-4 max-w-3xl text-base leading-7 text-muted">
       {
         isRu
@@ -86,7 +86,7 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
       {catalogue.map((service, index) => <ServiceCard service={service} index={index} />)}
     </div>
 
-    <h2 class="mt-16 text-2xl md:text-3xl">
+    <h2 class="page-h2 mt-16">
       {isRu ? "Собственный SaaS (научно-исследовательские работы)" : "Own SaaS product (research and development)"}
     </h2>
     <p class="mt-4 max-w-3xl text-base leading-7 text-muted">

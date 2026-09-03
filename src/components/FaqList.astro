@@ -13,15 +13,15 @@ const { items, heading } = Astro.props;
   items.length > 0 && (
     <section class="border-t border-line">
       <div class="wrap py-20">
-        {heading && <h2 class="text-2xl md:text-4xl">{heading}</h2>}
-        <dl class:list={["max-w-3xl divide-y divide-line border-y border-line", heading && "mt-10"]}>
+        {heading && <h2 class="page-h2">{heading}</h2>}
+        <div class:list={["faq-list max-w-3xl", heading && "mt-10"]}>
           {items.map((item) => (
-            <div class="py-6">
-              <dt class="font-display text-lg">{item.q}</dt>
-              <dd class="mt-2 leading-7 text-muted">{item.a}</dd>
-            </div>
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
           ))}
-        </dl>
+        </div>
       </div>
     </section>
   )

@@ -49,11 +49,11 @@ const schema = TEAM.map((member) => ({
         { href: about, label: isRu ? "Команда" : "Team" },
       ]}
     />
-    <p class="eyebrow mt-8">{isRu ? "Команда" : "Team"}</p>
-    <h1 class="mt-4 max-w-4xl text-4xl leading-tight md:text-6xl">
+    <p class="badge mt-8">{isRu ? "Команда" : "Team"}</p>
+    <h1 class="page-h1 mt-4 max-w-4xl">
       {isRu ? "Партнёр по трансформации бизнеса, а не студия разработки." : "A business transformation partner, not a development shop."}
     </h1>
-    <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+    <p class="mt-6 max-w-2xl text-base leading-7 text-muted md:text-lg md:leading-8">
       {
         isRu
           ? `Мы не продаём технологии. Мы решаем бизнес-задачи технологиями. ${SITE.legalShort} публикует людей, потому что собственник среднего бизнеса спрашивает, кто останется с процессом после презентации.`
@@ -61,18 +61,18 @@ const schema = TEAM.map((member) => ({
       }
     </p>
 
-    <div id="team" class="mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
+    <div id="team" class="mt-16 grid gap-4 md:grid-cols-3">
       {TEAM.map((member) => <PersonCard member={member} locale={locale} />)}
     </div>
 
     <section class="mt-20 border-t border-line pt-16">
-      <h2 class="text-2xl md:text-3xl">{copy.whyH2}</h2>
-      <ul class="mt-10 grid gap-0 sm:grid-cols-2 md:grid-cols-3">
+      <h2 class="page-h2">{copy.whyH2}</h2>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {
           WHY_ROLES.map((role) => (
-            <li class="border-t border-line py-6 pr-6">
-              <h3 class="text-lg">{loc(role.title)}</h3>
-              <p class="mt-2 text-sm leading-6 text-muted">{loc(role.text)}</p>
+            <li class="panel">
+              <h3 class="text-lg font-semibold">{loc(role.title)}</h3>
+              <p class="mt-2 text-base leading-7 text-muted">{loc(role.text)}</p>
             </li>
           ))
         }
@@ -80,9 +80,9 @@ const schema = TEAM.map((member) => ({
     </section>
 
     <section class="mt-16 border-t border-line pt-16">
-      <h2 class="text-2xl md:text-3xl">{copy.differentiatorH2}</h2>
-      <p class="mt-4 max-w-3xl leading-7 text-muted">{copy.differentiator}</p>
-      <p class="mt-4 max-w-3xl leading-7 text-muted">{copy.manifesto}</p>
+      <h2 class="page-h2">{copy.differentiatorH2}</h2>
+      <p class="mt-4 max-w-3xl text-base leading-7 text-muted">{copy.differentiator}</p>
+      <blockquote class="pull-quote mt-10 max-w-3xl">{copy.manifesto}</blockquote>
     </section>
   </div>
 

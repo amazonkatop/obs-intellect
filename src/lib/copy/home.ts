@@ -135,6 +135,31 @@ export const WHY_ROLES = [
   },
 ] as const;
 
+export const HERO_METRICS = [
+  {
+    value: "−32%",
+    label: {
+      en: "manual load on the first process taken into production",
+      ru: "ручной нагрузки на первом процессе, выведенном в промышленный контур",
+    },
+  },
+  {
+    value: "6–12",
+    unit: { en: "weeks", ru: "недель" },
+    label: {
+      en: "from audit to a production slice with integrations",
+      ru: "от аудита до промышленного среза с интеграциями",
+    },
+  },
+  {
+    value: "39%",
+    label: {
+      en: "of companies already use AI assistants (SberAnalytics, 2025)",
+      ru: "компаний уже используют AI-ассистентов (СберАналитика, 2025)",
+    },
+  },
+] as const;
+
 export const PLATFORM_POINTS = [
   {
     title: { en: "Faster", ru: "Быстрее" },

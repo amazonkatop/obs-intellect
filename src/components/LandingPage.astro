@@ -46,12 +46,12 @@ const schema = faq.length
         { href: path, label: t(landing.nav) },
       ]}
     />
-    {landing.kicker && <p class="eyebrow mt-8">{t(landing.kicker)}</p>}
-    <h1 class="mt-4 max-w-4xl text-4xl leading-tight md:text-5xl">{t(landing.h1)}</h1>
-    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">{t(landing.lead)}</p>
-    <div class="mt-8 flex flex-wrap items-center gap-5">
+    {landing.kicker && <p class="badge mt-8">{t(landing.kicker)}</p>}
+    <h1 class="page-h1 mt-4 max-w-4xl">{t(landing.h1)}</h1>
+    <p class="mt-6 max-w-3xl text-base leading-7 text-muted md:text-lg md:leading-8">{t(landing.lead)}</p>
+    <div class="mt-8 flex flex-wrap items-center gap-3">
       <a href={contacts} class="btn-primary">{ctaLabel}</a>
-      <a href={`${contacts}#checkup`} class="btn-ghost">{secondaryLabel}</a>
+      <a href={`${contacts}#checkup`} class="btn-secondary">{secondaryLabel}</a>
     </div>
   </div>
 
@@ -59,29 +59,24 @@ const schema = faq.length
     landing.sections.map((section) => (
       <section class="border-t border-line">
         <div class="wrap py-16 md:py-20">
-          <h2 class="max-w-3xl text-2xl md:text-4xl">{t(section.h2)}</h2>
+          <h2 class="page-h2 max-w-3xl">{t(section.h2)}</h2>
           {section.body && <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{t(section.body)}</p>}
           {section.items && (
             <ol
               class:list={[
-                "mt-12",
-                section.numbered
-                  ? "grid gap-8 md:grid-cols-2 md:gap-x-12"
-                  : "grid gap-0 sm:grid-cols-2 md:grid-cols-2",
+                "mt-12 grid gap-4",
+                section.numbered ? "md:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3",
               ]}
             >
               {section.items.map((item, index) => (
-                <li
-                  class:list={[
-                    "border-t border-line py-6",
-                    !section.numbered && "md:pr-8",
-                  ]}
-                >
+                <li class="panel">
                   {section.numbered && (
-                    <p class="font-display text-2xl text-accent">{String(index + 1).padStart(2, "0")}</p>
+                    <p class="font-mono text-sm font-medium tracking-[0.08em] text-accent">
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
                   )}
-                  <h3 class:list={["text-lg", section.numbered && "mt-3"]}>{t(item.title)}</h3>
-                  <p class="mt-2 text-sm leading-6 text-muted">{t(item.text)}</p>
+                  <h3 class:list={["text-lg font-semibold", section.numbered && "mt-3"]}>{t(item.title)}</h3>
+                  <p class="mt-2 text-base leading-7 text-muted">{t(item.text)}</p>
                 </li>
               ))}
             </ol>
@@ -97,18 +92,18 @@ const schema = faq.length
     landing.related.length > 0 && (
       <section class="border-t border-line">
         <div class="wrap py-16">
-          <h2 class="text-2xl md:text-3xl">{locale === "ru" ? "Читать дальше" : "Related"}</h2>
-          <ul class="mt-8 grid gap-0 sm:grid-cols-2">
+          <h2 class="page-h2">{locale === "ru" ? "Читать дальше" : "Related"}</h2>
+          <ul class="mt-8 grid gap-4 sm:grid-cols-2">
             {landing.related.map((slug) => {
               const related = LANDING_BY_SLUG[slug];
               if (!related) return null;
               const href = compactPath(getRelativeLocaleUrl(locale, `/${related.slug}`));
               return (
-                <li class="border-t border-line py-5 pr-6">
-                  <a href={href} class="text-lg text-ink no-underline hover:text-primary">
-                    {t(related.nav)}
+                <li>
+                  <a href={href} class="panel panel-link">
+                    <h3 class="text-lg font-semibold text-ink">{t(related.nav)}</h3>
+                    <p class="mt-2 text-base leading-7 text-muted">{t(related.description)}</p>
                   </a>
-                  <p class="mt-2 text-sm leading-6 text-muted">{t(related.description)}</p>
                 </li>
               );
             })}

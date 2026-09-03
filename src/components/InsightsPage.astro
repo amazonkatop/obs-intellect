@@ -32,8 +32,8 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
         { href: here, label: "Insights" },
       ]}
     />
-    <p class="eyebrow mt-8">Insights</p>
-    <h1 class="mt-4 max-w-3xl text-4xl leading-tight md:text-5xl">
+    <p class="badge mt-8">Insights</p>
+    <h1 class="page-h1 mt-4 max-w-3xl">
       {isRu ? "Не блог ради блога. Экспертная база по задачам бизнеса." : "Not a blog for its own sake. A knowledge base around business problems."}
     </h1>
     <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
@@ -47,20 +47,20 @@ const loc = (value: { en: string; ru: string }) => locText(locale, value);
     {
       INSIGHT_CLUSTERS.map((cluster) => (
         <section class="mt-16 border-t border-line pt-12">
-          <h2 class="text-2xl md:text-3xl">{loc(cluster.title)}</h2>
-          <ul class="mt-8">
+          <h2 class="page-h2">{loc(cluster.title)}</h2>
+          <ul class="mt-8 grid gap-4 md:grid-cols-2">
             {cluster.slugs.map((slug) => {
               const page = LANDING_BY_SLUG[slug];
               if (!page) return null;
               return (
-                <li class="border-t border-line py-6">
+                <li>
                   <a
                     href={compactPath(getRelativeLocaleUrl(locale, `/${page.slug}`))}
-                    class="text-xl text-ink no-underline hover:text-primary"
+                    class="panel panel-link"
                   >
-                    {loc(page.h1)}
+                    <h3 class="text-xl font-semibold text-ink">{loc(page.h1)}</h3>
+                    <p class="mt-2 text-base leading-7 text-muted">{loc(page.description)}</p>
                   </a>
-                  <p class="mt-2 max-w-3xl text-sm leading-6 text-muted">{loc(page.description)}</p>
                 </li>
               );
             })}

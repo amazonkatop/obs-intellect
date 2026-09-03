@@ -14,15 +14,15 @@ const cases = await getCases();
 >
   <div class="wrap py-16 md:py-24">
     <Breadcrumb items={[{ href: "/ru", label: "Главная" }, { href: "/ru/cases", label: "Кейсы" }]} />
-    <p class="eyebrow mt-8">Кейсы</p>
-    <h1 class="mt-4 max-w-3xl text-4xl leading-tight md:text-5xl">
+    <p class="badge mt-8">Кейсы</p>
+    <h1 class="page-h1 mt-4 max-w-3xl">
       Бизнес-проблема. Инсайт. Решение. Результат.
     </h1>
     <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
       Мы не публикуем «разработали приложение на React». Каждый кейс начинается с того, как работала
       компания, что показал аудит, что внедрили и какая цифра изменилась.
     </p>
-    <div class="mt-12">
+    <div class="mt-12 grid gap-4">
       {cases.map((item) => <CaseCard item={item} />)}
     </div>
   </div>

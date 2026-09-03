@@ -43,7 +43,7 @@ const toc = [
         Федерации от 30 сентября 2022 г. № 1729. Приказ Минцифры России от 02.06.2025 № 511 (вступил в
         силу 21 ноября 2025 г.)
       </p>
-      <h1 class="mt-4 text-3xl leading-tight md:text-4xl">
+      <h1 class="page-h1 mt-4">
         Сведения об организации, осуществляющей деятельность в области информационных технологий
       </h1>
       <p class="mt-4 text-base leading-7 text-muted">
@@ -53,12 +53,12 @@ const toc = [
         Сведения размещены в разметке самой страницы, а не только в прикреплённом файле.
       </p>
       <p class="mt-3 text-sm text-muted">
-        Адрес страницы для указания в заявлении: <code class="text-ink">{pageUrl}</code>
+        Адрес страницы для указания в заявлении: <code class="font-mono text-[13px] text-ink">{pageUrl}</code>
       </p>
       <p class="mt-2 text-sm text-muted">Дата актуализации сведений: {updated}</p>
     </header>
 
-    <nav class="mt-10 border border-line bg-surface p-6" aria-labelledby="toc">
+    <nav class="mt-10 panel" aria-labelledby="toc">
       <h2 id="toc" class="text-lg">Содержание страницы по приказу № 511</h2>
       <ol class="mt-4 space-y-2 text-sm">
         {
@@ -75,7 +75,7 @@ const toc = [
     </nav>
 
     <section class="mt-12" aria-labelledby="requisites">
-      <h2 id="requisites" class="text-2xl">Реквизиты организации</h2>
+      <h2 id="requisites" class="page-h2">Реквизиты организации</h2>
       <p class="mt-3 text-sm text-muted">
         Полное наименование приведено в формулировке, соответствующей сведениям единого государственного
         реестра юридических лиц, без замены на аббревиатуру.
@@ -127,7 +127,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="okved">
-      <h2 id="okved" class="text-2xl">Основной код Общероссийского классификатора видов экономической деятельности</h2>
+      <h2 id="okved" class="page-h2">Основной код Общероссийского классификатора видов экономической деятельности</h2>
       <p class="mt-3 text-base leading-7 text-muted">
         Основной вид экономической деятельности организации — код <strong>62.01</strong>
         ({okvedTitles["62.01"]}). Код относится к профильной деятельности в области информационных
@@ -157,7 +157,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="order-449">
-      <h2 id="order-449" class="text-2xl">
+      <h2 id="order-449" class="page-h2">
         Коды видов деятельности в области информационных технологий
       </h2>
       <p class="mt-3 text-base leading-7 text-muted">
@@ -178,7 +178,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="activity">
-      <h2 id="activity" class="text-2xl">Описание реализуемых товаров, выполняемых работ и оказываемых услуг</h2>
+      <h2 id="activity" class="page-h2">Описание реализуемых товаров, выполняемых работ и оказываемых услуг</h2>
       <p class="mt-4 leading-7 text-muted">
         Организация анализирует действующий бизнес заказчика, переводит бизнес-процессы в цифровую модель,
         выявляет узкие места и точки роста, формирует технологическую стратегию, проектирует, разрабатывает,
@@ -222,7 +222,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="prices">
-      <h2 id="prices" class="text-2xl">Сведения о стоимости товаров, работ и услуг</h2>
+      <h2 id="prices" class="page-h2">Сведения о стоимости товаров, работ и услуг</h2>
       <p class="mt-3 text-base leading-7 text-muted">
         Ниже приведены базовые тарифы: минимальная стоимость первого согласованного контура работ.
         Итоговая цена договора определяется после аудита и зависит от объёма сопряжений и качества исходных
@@ -268,7 +268,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="saas">
-      <h2 id="saas" class="text-2xl">
+      <h2 id="saas" class="page-h2">
         Исключительные права на программы для электронных вычислительных машин и способы предоставления прав
       </h2>
       <p class="mt-3 text-base leading-7 text-muted">
@@ -320,7 +320,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="stack">
-      <h2 id="stack" class="text-2xl">
+      <h2 id="stack" class="page-h2">
         Языки программирования, программное обеспечение и инструменты разработки
       </h2>
       <p class="mt-3 text-base leading-7 text-muted">
@@ -350,7 +350,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="registry">
-      <h2 id="registry" class="text-2xl">
+      <h2 id="registry" class="page-h2">
         Сведения о включении программы в единый реестр российских программ
       </h2>
       <p class="mt-3 text-base leading-7 text-muted">
@@ -382,7 +382,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="ofd">
-      <h2 id="ofd" class="text-2xl">Сведения об операторе фискальных данных</h2>
+      <h2 id="ofd" class="page-h2">Сведения об операторе фискальных данных</h2>
       <p class="mt-3 text-base leading-7 text-muted">
         Пункт 6 приказа № 511 применяется, если организация является оператором фискальных данных.
       </p>
@@ -393,7 +393,7 @@ const toc = [
     </section>
 
     <section class="mt-12" aria-labelledby="access">
-      <h2 id="access" class="text-2xl">Режим доступа к сведениям</h2>
+      <h2 id="access" class="page-h2">Режим доступа к сведениям</h2>
       <p class="mt-3 text-base leading-7 text-muted">
         Пункт 7 приказа № 511: официальный сайт должен функционировать в круглосуточном режиме и
         обеспечивать свободный доступ без регистрации и без предоставления персональных данных.

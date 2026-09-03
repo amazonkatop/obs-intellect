@@ -15,8 +15,8 @@ const copy = caseFields(item, locale);
 ---
 
 <article class="wrap narrow py-16 md:py-24">
-  <p class="text-sm text-muted">{item.industry}</p>
-  <h1 class="mt-4 text-4xl leading-tight md:text-5xl">{item.client_name}</h1>
+  <p class="badge">{item.industry}</p>
+  <h1 class="page-h1 mt-4">{item.client_name}</h1>
   <p class="mt-6 text-lg leading-8 text-accent">{copy.result}</p>
 
   <div class="mt-10 border border-line">
@@ -30,20 +30,20 @@ const copy = caseFields(item, locale);
     />
   </div>
 
-  <h2 class="mt-12 text-2xl">
+  <h2 class="page-h2 mt-12">
     {locale === "ru" ? "Бизнес-проблема" : "Business problem"}
   </h2>
-  <p class="mt-4 leading-7 text-muted">{copy.problem}</p>
+  <p class="mt-4 text-base leading-7 text-muted">{copy.problem}</p>
 
-  <h2 class="mt-10 text-2xl">
+  <h2 class="page-h2 mt-10">
     {locale === "ru" ? "Что обнаружили и что сделали" : "Insight and solution"}
   </h2>
-  <p class="mt-4 leading-7 text-muted whitespace-pre-line">{copy.solution}</p>
+  <p class="mt-4 text-base leading-7 text-muted whitespace-pre-line">{copy.solution}</p>
 
-  <h2 class="mt-10 text-2xl">
+  <h2 class="page-h2 mt-10">
     {locale === "ru" ? "Результат" : "Result"}
   </h2>
-  <p class="mt-4 leading-7 text-accent">{copy.result}</p>
+  <p class="mt-4 text-base leading-7 text-accent">{copy.result}</p>
 
   <p class="mt-12 text-sm">
     <a href={getRelativeLocaleUrl(locale, "/cases")} class="text-primary no-underline">

@@ -4,7 +4,7 @@ import CaseCard from "./CaseCard.astro";
 import CtaBand from "./CtaBand.astro";
 import FaqList from "./FaqList.astro";
 import Layout from "../layouts/Layout.astro";
-import { CHANGE_OFFERS, HOME, METHOD_STEPS, PLATFORM_POINTS, WHY_ROLES } from "../lib/copy/home";
+import { CHANGE_OFFERS, HERO_METRICS, HOME, METHOD_STEPS, PLATFORM_POINTS, WHY_ROLES } from "../lib/copy/home";
 import { SITE_FAQ } from "../lib/copy/faq";
 import { compactPath, locText, type Locale } from "../lib/i18n";
 import { TEAM, teamCopy } from "../lib/team";
@@ -39,27 +39,44 @@ const schema = [
 
 <Layout locale={locale} title={copy.title} description={copy.description} schema={schema}>
   <section class="border-b border-line">
-    <div class="wrap grid gap-12 py-20 md:grid-cols-12 md:py-28">
+    <div class="wrap grid gap-12 py-16 md:grid-cols-12 md:py-24">
       <div class="md:col-span-7">
-        <h1 class="text-4xl leading-tight md:text-6xl">{copy.h1}</h1>
-        <p class="mt-6 max-w-xl text-lg leading-8 text-muted">{copy.lead}</p>
-        <div class="mt-8 flex flex-wrap items-center gap-5">
-          <a href={contacts} class="btn-primary">{copy.ctaPrimary}</a>
-          <a href={`${contacts}#checkup`} class="btn-ghost">{copy.ctaSecondary}</a>
+        <h1 class="page-h1 max-w-3xl">{copy.h1}</h1>
+        <div class="badge-row mt-6">
+          {copy.kicker.split("·").map((tag) => <span class="badge">{tag.trim()}</span>)}
         </div>
-        <p class="mt-6 text-sm text-muted">{copy.kicker}</p>
+        <p class="mt-6 max-w-xl text-base leading-7 text-muted md:text-lg md:leading-8">{copy.lead}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href={contacts} class="btn-primary">{copy.ctaPrimary}</a>
+          <a href={`${contacts}#checkup`} class="btn-secondary">{copy.ctaSecondary}</a>
+        </div>
       </div>
-      <aside class="flex flex-col justify-end gap-6 border-t border-line pt-8 md:col-span-5 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-        <p class="text-sm leading-6 text-muted">{copy.formula}</p>
-        <p class="font-display text-xl leading-8 text-ink">{copy.manifestoH2}</p>
-        <p class="text-sm leading-6 text-muted">{copy.manifesto}</p>
+      <aside class="flex flex-col justify-end gap-5 border-t border-line pt-8 md:col-span-5 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+        <p class="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">{copy.formula}</p>
+        <p class="text-xl font-semibold leading-7 tracking-[-0.02em] text-ink">{copy.manifestoH2}</p>
+        <p class="text-base leading-7 text-muted">{copy.manifesto}</p>
       </aside>
+    </div>
+    <div class="wrap">
+      <div class="metric-strip">
+        {
+          HERO_METRICS.map((item) => (
+            <article>
+              <p class="metric-value">
+                {item.value}
+                {"unit" in item && item.unit ? <span class="metric-unit">{loc(item.unit)}</span> : null}
+              </p>
+              <p class="mt-3 text-base leading-6 text-muted">{loc(item.label)}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.startPointH2}</h2>
+      <h2 class="page-h2 max-w-3xl">{copy.startPointH2}</h2>
       <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.startPoint}</p>
       <p class="mt-8">
         <a href={audit} class="btn-primary">{copy.startCta}</a>
@@ -69,14 +86,14 @@ const schema = [
 
   <section id="method" class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.howH2}</h2>
-      <ol class="mt-12 grid gap-0 md:grid-cols-2 lg:grid-cols-3">
+      <h2 class="page-h2 max-w-3xl">{copy.howH2}</h2>
+      <ol class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
           METHOD_STEPS.map((step) => (
-            <li class="method-step border-t border-line py-8 md:pr-10">
-              <p class="font-display text-3xl text-accent">{step.n}</p>
-              <h3 class="mt-3 text-lg">{loc(step.title)}</h3>
-              <p class="mt-3 text-sm leading-6 text-muted">{loc(step.text)}</p>
+            <li class="method-step panel">
+              <p class="font-mono text-sm font-medium tracking-[0.08em] text-accent">{step.n}</p>
+              <h3 class="mt-3 text-lg font-semibold">{loc(step.title)}</h3>
+              <p class="mt-3 text-base leading-7 text-muted">{loc(step.text)}</p>
             </li>
           ))
         }
@@ -86,14 +103,14 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.platformH2}</h2>
+      <h2 class="page-h2 max-w-3xl">{copy.platformH2}</h2>
       <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.platform}</p>
-      <div class="mt-12 grid gap-0 md:grid-cols-3 md:divide-x md:divide-line">
+      <div class="mt-12 grid gap-4 md:grid-cols-3">
         {
           PLATFORM_POINTS.map((item) => (
-            <article class="border-t border-line py-8 md:border-t-0 md:px-8 md:first:pl-0 md:last:pr-0">
-              <h3 class="text-lg">{loc(item.title)}</h3>
-              <p class="mt-3 text-sm leading-6 text-muted">{loc(item.text)}</p>
+            <article class="panel">
+              <h3 class="text-lg font-semibold">{loc(item.title)}</h3>
+              <p class="mt-3 text-base leading-7 text-muted">{loc(item.text)}</p>
             </article>
           ))
         }
@@ -108,18 +125,18 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.changeH2}</h2>
-      <ul class="mt-12 grid gap-0 md:grid-cols-2">
+      <h2 class="page-h2 max-w-3xl">{copy.changeH2}</h2>
+      <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
-          CHANGE_OFFERS.map((offer) => (
-            <li class="border-t border-line py-8 md:pr-10">
+          CHANGE_OFFERS.map((offer, index) => (
+            <li class:list={[index === 0 && "offer-featured"]}>
               <a
                 href={compactPath(getRelativeLocaleUrl(locale, offer.href))}
-                class="text-xl text-ink no-underline hover:text-primary md:text-2xl"
+                class="panel panel-link"
               >
-                {loc(offer.title)}
+                <h3 class="text-xl font-semibold text-ink">{loc(offer.title)}</h3>
+                <p class="mt-3 text-base leading-7 text-muted">{loc(offer.text)}</p>
               </a>
-              <p class="mt-3 max-w-lg text-sm leading-6 text-muted">{loc(offer.text)}</p>
             </li>
           ))
         }
@@ -131,9 +148,17 @@ const schema = [
     locale === "ru" && (
       <section class="border-b border-line">
         <div class="wrap py-20">
-          <h2 class="max-w-3xl text-2xl md:text-4xl">{HOME.ru.russiaH2}</h2>
+          <h2 class="page-h2 max-w-3xl">{HOME.ru.russiaH2}</h2>
           <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{HOME.ru.russia}</p>
           <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{HOME.ru.proof}</p>
+          <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {copy.techItems.map((item) => (
+              <li class="panel">
+                <p class="badge mb-4">{item.title}</p>
+                <p class="text-base leading-7 text-muted">{item.text}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     )
@@ -141,35 +166,37 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.techH2}</h2>
+      <h2 class="page-h2 max-w-3xl">{copy.techH2}</h2>
       <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.tech}</p>
-      <ul class="mt-12 grid gap-0 sm:grid-cols-2 md:grid-cols-3">
-        {
-          copy.techItems.map((item) => (
-            <li class="border-t border-line py-6 pr-6">
-              <h3 class="text-lg">{item.title}</h3>
-              <p class="mt-2 text-sm leading-6 text-muted">{item.text}</p>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        locale === "en" && (
+          <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {copy.techItems.map((item) => (
+              <li class="panel">
+                <p class="badge mb-4">{item.title}</p>
+                <p class="text-base leading-7 text-muted">{item.text}</p>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </section>
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.whyH2}</h2>
-      <ul class="mt-12 grid gap-0 sm:grid-cols-2 md:grid-cols-3">
+      <h2 class="page-h2 max-w-3xl">{copy.whyH2}</h2>
+      <ul class="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {
           WHY_ROLES.map((role) => (
-            <li class="border-t border-line py-6 pr-6">
-              <h3 class="text-lg">{loc(role.title)}</h3>
-              <p class="mt-2 text-sm leading-6 text-muted">{loc(role.text)}</p>
+            <li class="panel">
+              <h3 class="text-lg font-semibold">{loc(role.title)}</h3>
+              <p class="mt-2 text-base leading-7 text-muted">{loc(role.text)}</p>
             </li>
           ))
         }
       </ul>
-      <h3 class="mt-16 text-xl md:text-2xl">{copy.differentiatorH2}</h3>
+      <h3 class="page-h2 mt-16">{copy.differentiatorH2}</h3>
       <p class="mt-4 max-w-3xl text-base leading-7 text-muted">{copy.differentiator}</p>
     </div>
   </section>
@@ -177,18 +204,18 @@ const schema = [
   <section class="border-b border-line">
     <div class="wrap py-20">
       <div class="flex items-end justify-between gap-4">
-        <h2 class="text-2xl md:text-4xl">{copy.teamH2}</h2>
-        <a href={`${about}#team`} class="text-sm text-primary no-underline">{copy.teamLink}</a>
+        <h2 class="page-h2">{copy.teamH2}</h2>
+        <a href={`${about}#team`} class="text-base text-primary no-underline">{copy.teamLink}</a>
       </div>
-      <div class="mt-12 grid gap-10 md:grid-cols-3">
+      <div class="mt-12 grid gap-4 md:grid-cols-3">
         {
           TEAM.map((member) => {
             const person = teamCopy(member, locale);
             return (
-              <a href={`${about}#${member.id}`} class="block border-t border-line pt-6 no-underline">
-                <p class="text-sm text-muted">{person.role}</p>
-                <p class="mt-2 font-display text-xl text-ink">{person.name}</p>
-                <p class="mt-3 line-clamp-3 text-sm leading-6 text-muted">{person.bio}</p>
+              <a href={`${about}#${member.id}`} class="panel panel-link">
+                <p class="badge">{person.role}</p>
+                <p class="mt-4 text-xl font-semibold text-ink">{person.name}</p>
+                <p class="mt-3 line-clamp-3 text-base leading-7 text-muted">{person.bio}</p>
               </a>
             );
           })
@@ -200,8 +227,8 @@ const schema = [
   <section class="border-b border-line">
     <div class="wrap py-20">
       <div class="flex items-end justify-between gap-4">
-        <h2 class="text-2xl md:text-4xl">{copy.casesH2}</h2>
-        <a href={casesHref} class="text-sm text-primary no-underline">{copy.casesLink}</a>
+        <h2 class="page-h2">{copy.casesH2}</h2>
+        <a href={casesHref} class="text-base text-primary no-underline">{copy.casesLink}</a>
       </div>
       <div class="mt-8 grid gap-8 md:grid-cols-3">
         {cases.map((item) => <CaseCard item={item} compact />)}
@@ -211,7 +238,7 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="max-w-3xl text-2xl md:text-4xl">{copy.startupH2}</h2>
+      <h2 class="page-h2 max-w-3xl">{copy.startupH2}</h2>
       <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.startup}</p>
       <p class="mt-8">
         <a href={startup} class="btn-primary">{copy.startupCta}</a>

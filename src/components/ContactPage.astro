@@ -32,11 +32,11 @@ const revenueOptions = isRu
 >
   <div class="wrap grid gap-12 py-16 md:grid-cols-2 md:py-24">
     <div>
-      <p class="eyebrow">{isRu ? "Контакты" : "Contact"}</p>
-      <h1 class="mt-4 text-4xl leading-tight md:text-5xl">
+      <p class="badge">{isRu ? "Контакты" : "Contact"}</p>
+      <h1 class="page-h1 mt-4">
         {isRu ? "Провести аудит бизнеса" : "Talk to an expert"}
       </h1>
-      <p class="mt-6 text-lg leading-8 text-muted">{copy.checkup}</p>
+      <p class="mt-6 text-base leading-7 text-muted md:text-lg md:leading-8">{copy.checkup}</p>
       <p class="mt-4 text-base leading-7 text-muted">
         {
           isRu
@@ -63,12 +63,12 @@ const revenueOptions = isRu
 
     <form
       id="checkup"
-      class="scroll-mt-24 border border-line bg-surface p-6"
+      class="scroll-mt-24 panel"
       method="post"
       action={formAction || `mailto:${SITE.email}`}
       enctype={formAction ? "application/x-www-form-urlencoded" : "text/plain"}
     >
-      <h2 class="text-lg">{isRu ? "AI Business Check-up" : "AI Business Check-up"}</h2>
+      <h2 class="text-lg font-semibold">{isRu ? "AI Business Check-up" : "AI Business Check-up"}</h2>
       {
         !formAction && (
           <p class="mt-2 text-sm text-muted">

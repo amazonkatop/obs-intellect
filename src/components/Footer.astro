@@ -14,17 +14,17 @@ const locPath = (href: string) => compactPath(getRelativeLocaleUrl(locale, href)
 <footer class="border-t border-line">
   <div class="wrap grid gap-12 py-20 md:grid-cols-2 lg:grid-cols-4">
     <div>
-      <p class="font-display text-lg text-ink">{SITE.legalShort}</p>
-      <p class="mt-1 text-sm text-muted">{locale === "ru" ? "ОБС Интеллект" : SITE.name}</p>
-      <p class="mt-4 max-w-sm text-sm leading-6 text-muted">
+      <p class="text-lg font-semibold text-ink">{SITE.legalShort}</p>
+      <p class="mt-1 text-base text-muted">{locale === "ru" ? "ОБС Интеллект" : SITE.name}</p>
+      <p class="mt-4 max-w-sm text-base leading-7 text-muted">
         {locale === "ru" ? SITE.descriptionRu : SITE.description}
       </p>
-      <p class="mt-4 text-sm leading-6 text-muted">{copy.formula}</p>
+      <p class="mt-4 font-mono text-[11px] font-medium uppercase tracking-[0.08em] leading-5 text-muted">{copy.formula}</p>
     </div>
 
     <div>
-      <p class="text-sm text-muted">{locale === "ru" ? "Практика" : "Practice"}</p>
-      <ul class="mt-4 space-y-3 text-sm">
+      <p class="badge">{locale === "ru" ? "Практика" : "Practice"}</p>
+      <ul class="mt-4 space-y-3 text-base">
         {
           FOOTER_PRACTICE[locale].map((link) => (
             <li>
@@ -38,8 +38,8 @@ const locPath = (href: string) => compactPath(getRelativeLocaleUrl(locale, href)
     </div>
 
     <div>
-      <p class="text-sm text-muted">{locale === "ru" ? "Продукт" : "Build"}</p>
-      <ul class="mt-4 space-y-3 text-sm">
+      <p class="badge">{locale === "ru" ? "Продукт" : "Build"}</p>
+      <ul class="mt-4 space-y-3 text-base">
         {
           FOOTER_BUILD[locale].map((link) => (
             <li>
@@ -73,8 +73,8 @@ const locPath = (href: string) => compactPath(getRelativeLocaleUrl(locale, href)
     </div>
 
     <aside aria-label={locale === "ru" ? "Зарезервировано под ИИ-чат" : "Reserved for future AI chat"}>
-      <p class="text-sm text-ink">{locale === "ru" ? "AI Business Check-up" : "AI Business Check-up"}</p>
-      <p class="mt-3 text-sm leading-6 text-muted">
+      <p class="badge">{locale === "ru" ? "AI Business Check-up" : "AI Business Check-up"}</p>
+      <p class="mt-3 text-base leading-7 text-muted">
         {
           locale === "ru"
             ? "Чат-ассистент появится здесь. Сейчас первичная диагностика — через форму на странице контактов, без регистрации и капчи."

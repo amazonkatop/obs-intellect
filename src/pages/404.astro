@@ -11,15 +11,15 @@ const ru = isRuPath(Astro.url.pathname);
   description={ru ? "Запрошенный адрес отсутствует на сайте ООО «ОБС Интеллект»." : "The requested page does not exist on the OBS Intellect site."}
 >
   <div class="wrap py-24">
-    <h1 class="text-4xl">{ru ? "Страница не найдена" : "Page not found"}</h1>
-    <p class="mt-4 max-w-xl text-muted">
+    <h1 class="page-h1">{ru ? "Страница не найдена" : "Page not found"}</h1>
+    <p class="mt-4 max-w-xl text-base leading-7 text-muted">
       {ru
         ? "Этого адреса нет в статической версии сайта. Вернитесь на главную или откройте аудит, если искали, с чего начать."
         : "This URL is not part of the static site. Go home, or open the business audit if you were looking for where to start."}
     </p>
-    <p class="mt-8 flex flex-wrap gap-6">
-      <a href={ru ? "/ru" : "/"} class="text-primary">{ru ? "На главную" : "Home"}</a>
-      <a href={ru ? "/ru/business-audit" : "/business-audit"} class="text-primary">
+    <p class="mt-8 flex flex-wrap gap-3">
+      <a href={ru ? "/ru" : "/"} class="btn-primary">{ru ? "На главную" : "Home"}</a>
+      <a href={ru ? "/ru/business-audit" : "/business-audit"} class="btn-secondary">
         {ru ? "Аудит бизнеса" : "Business audit"}
       </a>
     </p>
