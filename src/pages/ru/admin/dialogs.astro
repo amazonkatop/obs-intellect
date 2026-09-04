@@ -1,0 +1,15 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Диалоги" tab="dialogs">
+  <div class="wrap py-16 md:py-24" data-admin-dialogs>
+    <p class="badge">Контроль качества</p>
+    <h1 class="page-h1 mt-4">Диалоги</h1>
+    <p class="mt-5 max-w-2xl text-base leading-7 text-muted">
+      История сессий AI-аудита. Сценарий чекапа ещё временный — смотрите, как ассистент ведёт разговор.
+    </p>
+    <p class="mt-4 text-sm text-muted" data-dialogs-status></p>
+    <div class="mt-10" data-dialogs-view></div>
+  </div>
+</AdminLayout>

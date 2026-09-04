@@ -11,10 +11,13 @@ interface Props {
   description: string;
   locale?: "en" | "ru";
   schema?: unknown[];
+  cmsTitle?: string;
+  cmsDescription?: string;
+  chat?: boolean;
 }
 
 const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
-const { title, description, schema = [] } = Astro.props;
+const { title, description, schema = [], cmsTitle, cmsDescription, chat = false } = Astro.props;
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -33,7 +36,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} data-cms-title={cmsTitle} data-cms-description={cmsDescription}>
   <head>
     <script is:inline>
       const theme = (() => {
@@ -83,12 +86,13 @@ const jsonLd = {
     <Seo title={title} description={description} lang={locale} />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
-  <body class="flex min-h-screen flex-col bg-canvas font-sans text-ink">
+  <body class:list={["flex flex-col bg-canvas font-sans text-ink", chat ? "h-dvh overflow-hidden" : "min-h-screen"]}>
     <a class="skip-link" href="#content">{locale === "ru" ? "К содержанию" : "Skip to content"}</a>
     <Header />
-    <main id="content" class="flex-1">
+    <main id="content" class:list={["flex-1", chat && "flex min-h-0 flex-col"]}>
       <slot />
     </main>
-    <Footer />
+    {!chat && <Footer />}
+    <script is:inline src="/cms/apply.js"></script>
   </body>
 </html>

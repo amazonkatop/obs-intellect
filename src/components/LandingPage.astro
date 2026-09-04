@@ -35,7 +35,14 @@ const schema = faq.length
   : [];
 ---
 
-<Layout locale={locale} title={t(landing.title)} description={t(landing.description)} schema={schema}>
+<Layout
+  locale={locale}
+  title={t(landing.title)}
+  description={t(landing.description)}
+  schema={schema}
+  cmsTitle={`landing.${landing.slug}.${locale}.title`}
+  cmsDescription={`landing.${landing.slug}.${locale}.description`}
+>
   <div class="wrap py-16 md:pb-8 md:pt-24">
     <Breadcrumb
       items={[
@@ -44,8 +51,8 @@ const schema = faq.length
       ]}
     />
     {landing.kicker && <p class="badge mt-8">{t(landing.kicker)}</p>}
-    <h1 class="page-h1 mt-4 max-w-4xl">{t(landing.h1)}</h1>
-    <p class="mt-6 max-w-3xl text-base leading-7 text-muted md:text-lg md:leading-8">{t(landing.lead)}</p>
+    <h1 class="page-h1 mt-4 max-w-4xl" data-cms={`landing.${landing.slug}.${locale}.h1`}>{t(landing.h1)}</h1>
+    <p class="mt-6 max-w-3xl text-base leading-7 text-muted md:text-lg md:leading-8" data-cms={`landing.${landing.slug}.${locale}.lead`}>{t(landing.lead)}</p>
     <div class="mt-8">
       <CtaPair locale={locale} />
     </div>
@@ -109,7 +116,7 @@ const schema = faq.length
     )
   }
 
-  <FaqList items={faq} heading={copy.faqH2} />
+  <FaqList items={faq} heading={copy.faqH2} cmsHeading={`home.${locale}.faqH2`} />
 
-  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} />
+  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} cmsH2={`home.${locale}.finalH2`} cmsText={`home.${locale}.final`} />
 </Layout>

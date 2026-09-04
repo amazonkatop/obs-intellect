@@ -21,3 +21,8 @@ Thumbs.db
 
 # Netlify local link
 .netlify/
+
+# Admin CMS: secrets and uploaded binaries stay on the server disk
+data/cms/integrations.json
+public/uploads/*
+!public/uploads/.gitkeep

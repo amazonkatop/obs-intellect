@@ -341,3 +341,6 @@ begin
   end if;
 end
 $$;
+
+-- Runtime AI chat, leads, integrations, admin_users: run db/chat.sql on the same cluster.
+-- The Node process (`npm start` / `npm run dev`) needs INSERT/UPDATE on those tables.

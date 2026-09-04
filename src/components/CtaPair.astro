@@ -15,6 +15,6 @@ const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
 ---
 
 <div class:list={["flex flex-wrap items-center gap-3", Astro.props.class]}>
-  <a href={aiAudit} class="btn-primary">{copy.ctaPrimary}</a>
-  <a href={contacts} class="btn-secondary">{copy.ctaSecondary}</a>
+  <a href={aiAudit} class="btn-primary" data-cms={`home.${locale}.ctaPrimary`}>{copy.ctaPrimary}</a>
+  <a href={contacts} class="btn-secondary" data-cms={`home.${locale}.ctaSecondary`}>{copy.ctaSecondary}</a>
 </div>

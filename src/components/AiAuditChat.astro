@@ -1,0 +1,160 @@
+---
+import Layout from "../layouts/Layout.astro";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isRu = locale === "ru";
+const welcome = isRu
+  ? "Я AI-аналитик. Расскажите о своём бизнесе и какие проблемы вы видите — я проведу check up вашего бизнеса."
+  : "I'm an AI analyst. Tell me about your business and the problems you see — I'll run a check-up of your business.";
+const contacts = isRu ? "/ru/contacts" : "/contacts";
+---
+
+<Layout
+  locale={locale}
+  chat
+  title={isRu ? "AI-аудит бизнеса" : "AI business audit"}
+  description={
+    isRu
+      ? "Диалог с AI-аналитиком OBS Intellect: расскажите о бизнесе и проблемах — проведём check-up."
+      : "Chat with an OBS Intellect AI analyst: describe the business and the problems you see."
+  }
+>
+  <div class="chat-shell" data-chat data-locale={locale} data-contacts={contacts}>
+    <div class="chat-log" data-chat-log>
+      <article class="chat-bubble chat-bubble-assistant">
+        <p>{welcome}</p>
+      </article>
+    </div>
+    <form class="chat-composer" data-chat-form>
+      <label class="sr-only" for="chat-input">{isRu ? "Сообщение" : "Message"}</label>
+      <textarea
+        id="chat-input"
+        name="message"
+        rows="1"
+        required
+        maxlength="4000"
+        data-chat-input
+        placeholder={isRu ? "Напишите о бизнесе и проблеме…" : "Describe the business and the problem…"}
+      ></textarea>
+      <button type="submit" class="btn-primary" data-chat-send>
+        {isRu ? "Отправить" : "Send"}
+      </button>
+    </form>
+    <p class="chat-status" data-chat-status role="status"></p>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var root = document.querySelector("[data-chat]");
+      if (!root) return;
+      var log = root.querySelector("[data-chat-log]");
+      var form = root.querySelector("[data-chat-form]");
+      var input = root.querySelector("[data-chat-input]");
+      var sendBtn = root.querySelector("[data-chat-send]");
+      var statusEl = root.querySelector("[data-chat-status]");
+      var locale = root.getAttribute("data-locale") || "ru";
+      var contacts = root.getAttribute("data-contacts") || "/ru/contacts";
+      var sessionId = "";
+      var busy = false;
+      var ru = locale === "ru";
+
+      function unavailable(message, href) {
+        var text = message || (ru ? "Ассистент временно недоступен, напишите нам напрямую" : "The assistant is temporarily unavailable — write to us directly");
+        var link = href || contacts;
+        statusEl.innerHTML =
+          text +
+          ' — <a class="text-primary" href="' +
+          link +
+          '">' +
+          (ru ? "Написать нам" : "Write to us") +
+          "</a>";
+      }
+
+      function addBubble(role, text) {
+        var article = document.createElement("article");
+        article.className = "chat-bubble chat-bubble-" + role;
+        var p = document.createElement("p");
+        p.textContent = text;
+        article.appendChild(p);
+        log.appendChild(article);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function setBusy(next) {
+        busy = next;
+        sendBtn.disabled = next;
+        input.disabled = next;
+      }
+
+      fetch("/api/chat/session", {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ locale: locale }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { res: res, data: data };
+          });
+        })
+        .then(function (result) {
+          if (result.data && result.data.session_id) {
+            sessionId = result.data.session_id;
+            return;
+          }
+          unavailable(result.data && result.data.message, result.data && result.data.contacts);
+        })
+        .catch(function () {
+          unavailable();
+        });
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var text = String(input.value || "").trim();
+        if (!text || busy) return;
+        if (!sessionId) {
+          unavailable();
+          return;
+        }
+        addBubble("user", text);
+        input.value = "";
+        statusEl.textContent = ru ? "Думаю…" : "Thinking…";
+        setBusy(true);
+        fetch("/api/chat/message", {
+          method: "POST",
+          headers: { "content-type": "application/json", accept: "application/json" },
+          body: JSON.stringify({ session_id: sessionId, message: text, locale: locale }),
+        })
+          .then(function (res) {
+            return res.json().then(function (data) {
+              return { res: res, data: data };
+            });
+          })
+          .then(function (result) {
+            setBusy(false);
+            if (result.data && result.data.ok && result.data.reply && result.data.reply.content) {
+              addBubble("assistant", result.data.reply.content);
+              statusEl.textContent = "";
+              return;
+            }
+            unavailable(result.data && result.data.message, result.data && result.data.contacts);
+          })
+          .catch(function () {
+            setBusy(false);
+            unavailable();
+          });
+      });
+
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.requestSubmit();
+        }
+      });
+    })();
+  </script>
+</Layout>

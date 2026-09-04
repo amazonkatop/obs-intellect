@@ -1,0 +1,79 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  tab: "site" | "files" | "integrations" | "dialogs";
+}
+
+const { title, tab } = Astro.props;
+const tabs = [
+  { id: "site", href: "/ru/admin", label: "Сайт" },
+  { id: "files", href: "/ru/admin/files", label: "Файлы" },
+  { id: "integrations", href: "/ru/admin/integrations", label: "Интеграции" },
+  { id: "dialogs", href: "/ru/admin/dialogs", label: "Диалоги" },
+] as const;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+          return localStorage.getItem("theme");
+        }
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+        return "light";
+      })();
+      document.documentElement.setAttribute("data-theme", theme === "light" ? "light" : "dark");
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>{title} — OBS Admin</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/admin/admin.css" />
+  </head>
+  <body class="flex min-h-screen flex-col bg-canvas font-sans text-ink">
+    <header class="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-sm">
+      <div class="wrap flex items-center justify-between gap-6 py-4 md:py-5">
+        <p class="text-base font-semibold sm:text-lg">ОБС Интеллект</p>
+        <nav class="site-nav flex flex-1 items-center justify-end gap-5 lg:gap-7" aria-label="Админка">
+          {
+            tabs.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  "text-sm no-underline hover:text-primary",
+                  tab === item.id ? "text-primary" : "text-muted",
+                ]}
+                aria-current={tab === item.id ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+          <button type="button" class="text-sm text-muted hover:text-primary" data-admin-logout>
+            Выйти
+          </button>
+        </nav>
+      </div>
+    </header>
+    <main id="content" class="flex-1">
+      <slot />
+    </main>
+    <footer class="border-t border-line">
+      <div class="wrap py-6 text-xs text-muted">
+        Админка. Тексты обновляют сайт сразу через /cms/content.json. Секреты интеграций на диск сервера не попадают в git.
+      </div>
+    </footer>
+    <script is:inline src="/admin/app.js"></script>
+  </body>
+</html>

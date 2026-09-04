@@ -194,7 +194,7 @@ export const HOME = {
     kicker: "Business analysis · AI · Software · Integration · Support",
     ctaPrimary: "Start an AI audit",
     ctaHeader: "Start an AI audit",
-    ctaSecondary: "Write to the team",
+    ctaSecondary: "Write to us",
     startPointH2: "Your business is the starting point",
     startPoint:
       "We do not offer technology before we understand the task. First we study how the company earns money, where losses appear, which processes slow growth, and how the existing IT landscape is arranged. Then we draw a map of change and choose the technologies that have economic sense.",
@@ -246,7 +246,7 @@ export const HOME = {
     kicker: "Business analysis · AI · Software · Integration · Support",
     ctaPrimary: "Запустить AI-аудит",
     ctaHeader: "Запустить AI-аудит",
-    ctaSecondary: "Написать команде",
+    ctaSecondary: "Написать нам",
     startPointH2: "Ваш бизнес — наша точка отсчёта",
     startPoint:
       "Мы не предлагаем технологии до того, как понимаем задачу. Сначала изучаем, как компания зарабатывает, где возникают потери, какие процессы замедляют рост и как устроена существующая IT-инфраструктура. Затем формируем карту изменений и выбираем технологии, которые действительно имеют экономический смысл.",

@@ -4,16 +4,17 @@ import type { FaqItem } from "../lib/copy/faq";
 interface Props {
   items: FaqItem[];
   heading?: string;
+  cmsHeading?: string;
 }
 
-const { items, heading } = Astro.props;
+const { items, heading, cmsHeading } = Astro.props;
 ---
 
 {
   items.length > 0 && (
     <section class="border-t border-line">
       <div class="wrap py-20">
-        {heading && <h2 class="page-h2">{heading}</h2>}
+        {heading && <h2 class="page-h2" data-cms={cmsHeading}>{heading}</h2>}
         <div class:list={["faq-list max-w-3xl", heading && "mt-10"]}>
           {items.map((item) => (
             <details>

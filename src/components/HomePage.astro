@@ -37,23 +37,30 @@ const schema = [
 ];
 ---
 
-<Layout locale={locale} title={copy.title} description={copy.description} schema={schema}>
+<Layout
+  locale={locale}
+  title={copy.title}
+  description={copy.description}
+  schema={schema}
+  cmsTitle={`home.${locale}.title`}
+  cmsDescription={`home.${locale}.description`}
+>
   <section class="border-b border-line">
     <div class="wrap grid gap-12 py-16 md:grid-cols-12 md:py-24">
       <div class="md:col-span-7">
-        <h1 class="page-h1 max-w-3xl">{copy.h1}</h1>
+        <h1 class="page-h1 max-w-3xl" data-cms={`home.${locale}.h1`}>{copy.h1}</h1>
         <div class="badge-row mt-6">
           {copy.kicker.split("·").map((tag) => <span class="badge">{tag.trim()}</span>)}
         </div>
-        <p class="mt-6 max-w-xl text-base leading-7 text-muted md:text-lg md:leading-8">{copy.lead}</p>
+        <p class="mt-6 max-w-xl text-base leading-7 text-muted md:text-lg md:leading-8" data-cms={`home.${locale}.lead`}>{copy.lead}</p>
         <div class="mt-8">
           <CtaPair locale={locale} />
         </div>
       </div>
       <aside class="flex flex-col justify-end gap-5 border-t border-line pt-8 md:col-span-5 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-        <p class="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted">{copy.formula}</p>
-        <p class="text-xl font-semibold leading-7 tracking-[-0.02em] text-ink">{copy.manifestoH2}</p>
-        <p class="text-base leading-7 text-muted">{copy.manifesto}</p>
+        <p class="font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted" data-cms={`home.${locale}.formula`}>{copy.formula}</p>
+        <p class="text-xl font-semibold leading-7 tracking-[-0.02em] text-ink" data-cms={`home.${locale}.manifestoH2`}>{copy.manifestoH2}</p>
+        <p class="text-base leading-7 text-muted" data-cms={`home.${locale}.manifesto`}>{copy.manifesto}</p>
       </aside>
     </div>
     <div class="wrap">
@@ -75,17 +82,17 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.startPointH2}</h2>
-      <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.startPoint}</p>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.startPointH2`}>{copy.startPointH2}</h2>
+      <p class="mt-5 max-w-3xl text-base leading-7 text-muted" data-cms={`home.${locale}.startPoint`}>{copy.startPoint}</p>
       <p class="mt-8">
-        <a href={audit} class="text-sm text-primary no-underline">{copy.startCta}</a>
+        <a href={audit} class="text-sm text-primary no-underline" data-cms={`home.${locale}.startCta`}>{copy.startCta}</a>
       </p>
     </div>
   </section>
 
   <section id="method" class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.howH2}</h2>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.howH2`}>{copy.howH2}</h2>
       <ol class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
           METHOD_STEPS.map((step) => (
@@ -102,8 +109,8 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.platformH2}</h2>
-      <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.platform}</p>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.platformH2`}>{copy.platformH2}</h2>
+      <p class="mt-5 max-w-3xl text-base leading-7 text-muted" data-cms={`home.${locale}.platform`}>{copy.platform}</p>
       <div class="mt-12 grid gap-4 md:grid-cols-3">
         {
           PLATFORM_POINTS.map((item) => (
@@ -124,7 +131,7 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.changeH2}</h2>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.changeH2`}>{copy.changeH2}</h2>
       <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {
           CHANGE_OFFERS.map((offer, index) => (
@@ -165,8 +172,8 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.techH2}</h2>
-      <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.tech}</p>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.techH2`}>{copy.techH2}</h2>
+      <p class="mt-5 max-w-3xl text-base leading-7 text-muted" data-cms={`home.${locale}.tech`}>{copy.tech}</p>
       {
         locale === "en" && (
           <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -184,7 +191,7 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.whyH2}</h2>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.whyH2`}>{copy.whyH2}</h2>
       <ul class="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {
           WHY_ROLES.map((role) => (
@@ -195,15 +202,15 @@ const schema = [
           ))
         }
       </ul>
-      <h3 class="page-h2 mt-16">{copy.differentiatorH2}</h3>
-      <p class="mt-4 max-w-3xl text-base leading-7 text-muted">{copy.differentiator}</p>
+      <h3 class="page-h2 mt-16" data-cms={`home.${locale}.differentiatorH2`}>{copy.differentiatorH2}</h3>
+      <p class="mt-4 max-w-3xl text-base leading-7 text-muted" data-cms={`home.${locale}.differentiator`}>{copy.differentiator}</p>
     </div>
   </section>
 
   <section class="border-b border-line">
     <div class="wrap py-20">
       <div class="flex items-end justify-between gap-4">
-        <h2 class="page-h2">{copy.teamH2}</h2>
+        <h2 class="page-h2" data-cms={`home.${locale}.teamH2`}>{copy.teamH2}</h2>
         <a href={`${about}#team`} class="text-base text-primary no-underline">{copy.teamLink}</a>
       </div>
       <div class="mt-12 grid gap-4 md:grid-cols-3">
@@ -226,7 +233,7 @@ const schema = [
   <section class="border-b border-line">
     <div class="wrap py-20">
       <div class="flex items-end justify-between gap-4">
-        <h2 class="page-h2">{copy.casesH2}</h2>
+        <h2 class="page-h2" data-cms={`home.${locale}.casesH2`}>{copy.casesH2}</h2>
         <a href={casesHref} class="text-base text-primary no-underline">{copy.casesLink}</a>
       </div>
       <div class="mt-8 grid gap-4 md:grid-cols-3">
@@ -252,15 +259,15 @@ const schema = [
 
   <section class="border-b border-line">
     <div class="wrap py-20">
-      <h2 class="page-h2 max-w-3xl">{copy.startupH2}</h2>
-      <p class="mt-5 max-w-3xl text-base leading-7 text-muted">{copy.startup}</p>
+      <h2 class="page-h2 max-w-3xl" data-cms={`home.${locale}.startupH2`}>{copy.startupH2}</h2>
+      <p class="mt-5 max-w-3xl text-base leading-7 text-muted" data-cms={`home.${locale}.startup`}>{copy.startup}</p>
       <p class="mt-8">
-        <a href={startup} class="text-sm text-primary no-underline">{copy.startupCta}</a>
+        <a href={startup} class="text-sm text-primary no-underline" data-cms={`home.${locale}.startupCta`}>{copy.startupCta}</a>
       </p>
     </div>
   </section>
 
-  <FaqList items={faq} heading={copy.faqH2} />
+  <FaqList items={faq} heading={copy.faqH2} cmsHeading={`home.${locale}.faqH2`} />
 
-  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} />
+  <CtaBand h2={copy.finalH2} text={copy.final} locale={locale} cmsH2={`home.${locale}.finalH2`} cmsText={`home.${locale}.final`} />
 </Layout>

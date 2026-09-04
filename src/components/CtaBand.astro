@@ -7,22 +7,24 @@ interface Props {
   h2: string;
   text: string;
   locale?: Locale;
+  cmsH2?: string;
+  cmsText?: string;
 }
 
 const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
 const copy = HOME[locale];
 const aiAudit = compactPath(getRelativeLocaleUrl(locale, "/ai-audit"));
 const contacts = compactPath(getRelativeLocaleUrl(locale, "/contacts"));
-const { h2, text } = Astro.props;
+const { h2, text, cmsH2, cmsText } = Astro.props;
 ---
 
 <section class="border-t border-line">
   <div class="wrap py-20 md:py-24">
-    <h2 class="page-h2 max-w-3xl">{h2}</h2>
-    <p class="mt-5 max-w-2xl text-base leading-7 text-muted md:text-lg md:leading-8">{text}</p>
+    <h2 class="page-h2 max-w-3xl" data-cms={cmsH2}>{h2}</h2>
+    <p class="mt-5 max-w-2xl text-base leading-7 text-muted md:text-lg md:leading-8" data-cms={cmsText}>{text}</p>
     <div class="mt-8 flex flex-wrap items-center gap-3">
-      <a href={aiAudit} class="btn-primary">{copy.ctaPrimary}</a>
-      <a href={contacts} class="btn-secondary">{copy.ctaSecondary}</a>
+      <a href={aiAudit} class="btn-primary" data-cms={`home.${locale}.ctaPrimary`}>{copy.ctaPrimary}</a>
+      <a href={contacts} class="btn-secondary" data-cms={`home.${locale}.ctaSecondary`}>{copy.ctaSecondary}</a>
     </div>
   </div>
 </section>

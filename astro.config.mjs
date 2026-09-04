@@ -2,6 +2,7 @@
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import { apiVitePlugin } from "./backend/api.mjs";
 
 const site = process.env.PUBLIC_SITE_URL || "https://obs-intellect.netlify.app";
 
@@ -52,6 +53,6 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), apiVitePlugin()],
   },
 });

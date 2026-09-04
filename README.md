@@ -78,9 +78,11 @@ Replace placeholder legal identifiers in `legal_info` before any government fili
 
 ## 7. Sitewide CTAs
 
-Lead buttons are identical on marketing pages: **Start an AI audit / Запустить AI-аудит** → `/ai-audit` (Russian: `/ru/ai-audit`) and **Write to the team / Написать команде** → `/contacts`. They appear twice: in the hero (`CtaPair`) and in the closing band (`CtaBand`). The footer does not add a third button — only a text link to the AI-audit URL.
+Lead buttons are identical on marketing pages: **Start an AI audit / Запустить AI-аудит** → `/ai-audit` (Russian: `/ru/ai-audit`, working chat) and **Write to us / Написать нам** → `/contacts`. They appear twice: in the hero (`CtaPair`) and in the closing band (`CtaBand`). The footer does not add a third button — only a text link to the AI-audit URL.
 
-**Priority — not done:** `/ru/ai-audit` (and `/ai-audit`) is still a marketing landing. There is no working AI chat. All primary CTAs now point here, so connecting the assistant (DeepSeek API) is the next product task. See `TODO.md`.
+`/ru/ai-audit` is a full-page chat. The assistant key lives in PostgreSQL `integrations.config` (admin → Интеграции). It is never sent to the browser.
+
+**Still later:** full check-up script, Pulse sync, pay/booking from chat. See `TODO.md`.
 
 ## 8. Acquiring / T-Kassa (not live)
 
@@ -99,4 +101,14 @@ Legal drafts (Russian, placeholders in `[square brackets]`):
 - `/ru/legal/privacy`
 
 The webhook stub lives in `backend/pulse/payment.ts` and is **not** served by Astro. T-Kassa keys belong on the Pulse server only.
+
+## 9. Admin and AI chat
+
+Admin UI: `/ru/admin` (password: `ADMIN_PASSWORD`). Tabs: site texts, files, integrations, dialogs.
+
+AI assistant card writes `integrations` where `service_name = 'ai_assistant'`. Enable it and paste the provider key there. Then `/ru/ai-audit` talks to the model via `POST /api/chat/message`.
+
+Runtime SQL: `db/chat.sql` (after `db/schema.sql`).
+
+Chat API is served by `npm run dev` (Vite plugin) and Timeweb `npm start`. Netlify test deploys the `/api/chat/*` function; set `DATABASE_URL` in the Netlify **runtime** environment, not only at build.
 

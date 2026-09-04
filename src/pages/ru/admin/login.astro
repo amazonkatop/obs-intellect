@@ -1,0 +1,27 @@
+---
+import AdminLoginLayout from "../../../layouts/AdminLoginLayout.astro";
+---
+
+<AdminLoginLayout>
+  <div class="wrap narrow py-16 md:py-24">
+    <p class="badge">Админка</p>
+    <h1 class="page-h1 mt-4">Вход</h1>
+    <p class="mt-5 text-base leading-7 text-muted">
+      Та же визуальная система, что у сайта. После входа можно править тексты, загружать файлы и хранить ключи
+      интеграций. Пароль задаётся переменной ADMIN_PASSWORD на сервере.
+    </p>
+    <form class="mt-10 panel" data-admin-login>
+      <label class="block text-sm text-muted" for="password">Пароль</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        autocomplete="current-password"
+        class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink"
+      />
+      <button type="submit" class="btn-primary mt-6 w-full">Войти</button>
+      <p class="mt-3 text-sm text-muted" data-login-status></p>
+    </form>
+  </div>
+</AdminLoginLayout>
