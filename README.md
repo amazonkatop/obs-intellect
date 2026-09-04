@@ -80,7 +80,7 @@ Replace placeholder legal identifiers in `legal_info` before any government fili
 
 Lead buttons are identical on marketing pages: **Start an AI audit / Запустить AI-аудит** → `/ai-audit` (Russian: `/ru/ai-audit`, working chat) and **Write to us / Написать нам** → `/contacts`. They appear twice: in the hero (`CtaPair`) and in the closing band (`CtaBand`). The footer does not add a third button — only a text link to the AI-audit URL.
 
-`/ru/ai-audit` is a full-page chat. The assistant key lives in PostgreSQL `integrations.config` (admin → Интеграции). It is never sent to the browser.
+`/ru/ai-audit` is a full-page chat. Without `DATABASE_URL` the assistant stores sessions in `data/chat/store.json` (local/dev). With PostgreSQL it uses `integrations.config`. The API key is never sent to the browser.
 
 **Still later:** full check-up script, Pulse sync, pay/booking from chat. See `TODO.md`.
 
@@ -104,11 +104,11 @@ The webhook stub lives in `backend/pulse/payment.ts` and is **not** served by As
 
 ## 9. Admin and AI chat
 
-Admin UI: `/ru/admin` (password: `ADMIN_PASSWORD`). Tabs: site texts, files, integrations, dialogs.
+Admin UI: `/ru/admin`. First visit sets the password on `/ru/admin/login` (plus the administrator email). Forgot password: enter that email and create a new one. Hash is stored in `data/cms/admin.json` (gitignored), not in `.env`.
 
-AI assistant card writes `integrations` where `service_name = 'ai_assistant'`. Enable it and paste the provider key there. Then `/ru/ai-audit` talks to the model via `POST /api/chat/message`.
+Local without PostgreSQL: leave `DATABASE_URL` empty. Sessions and the assistant key go to `data/chat/store.json` (gitignored). In admin → Интеграции paste the model key and enable the card, **or** set `DEEPSEEK_API_KEY` in `.env` and skip admin.
 
-Runtime SQL: `db/chat.sql` (after `db/schema.sql`).
+With PostgreSQL: run `db/chat.sql` (after `db/schema.sql`). The AI assistant card writes `integrations` where `service_name = 'ai_assistant'`.
 
-Chat API is served by `npm run dev` (Vite plugin) and Timeweb `npm start`. Netlify test deploys the `/api/chat/*` function; set `DATABASE_URL` in the Netlify **runtime** environment, not only at build.
+Then `/ru/ai-audit` talks to the model via `POST /api/chat/message`. Chat API is served by `npm run dev` (Vite plugin) and Timeweb `npm start`. Netlify test deploys the `/api/chat/*` function; set `DATABASE_URL` in the Netlify **runtime** environment, not only at build.
 

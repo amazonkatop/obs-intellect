@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { query } from "../db.mjs";
+import { databaseUrl, query } from "../db.mjs";
 import {
   MAX_HISTORY,
   MAX_MESSAGE,
@@ -8,6 +8,7 @@ import {
   UNAVAILABLE,
   WELCOME,
 } from "./constants.mjs";
+import * as local from "./local-store.mjs";
 
 function localeOf(value) {
   return value === "en" ? "en" : "ru";
@@ -33,7 +34,28 @@ function newId() {
   return crypto.randomUUID();
 }
 
+function localMode() {
+  return !databaseUrl();
+}
+
+function envAssistant() {
+  const key = String(process.env.DEEPSEEK_API_KEY || process.env.AI_ASSISTANT_API_KEY || "").trim();
+  if (!key) return null;
+  return {
+    id: "env",
+    service_name: "ai_assistant",
+    is_enabled: true,
+    config: {
+      provider: String(process.env.AI_ASSISTANT_PROVIDER || "deepseek").trim() || "deepseek",
+      model: String(process.env.DEEPSEEK_MODEL || process.env.AI_ASSISTANT_MODEL || "deepseek-chat").trim(),
+      api_key: key,
+    },
+    updated_at: new Date().toISOString(),
+  };
+}
+
 export async function createSession() {
+  if (localMode()) return local.createSession();
   const id = newId();
   const result = await query(
     `insert into ai_chat_sessions (id, status, pulse_sync_status)
@@ -45,6 +67,7 @@ export async function createSession() {
 }
 
 export async function listSessions() {
+  if (localMode()) return local.listSessions();
   const result = await query(
     `select s.id, s.status, s.created_at, s.updated_at,
             count(m.id)::int as message_count,
@@ -64,6 +87,7 @@ export async function listSessions() {
 }
 
 export async function getSessionMessages(sessionId) {
+  if (localMode()) return local.getSessionMessages(sessionId);
   const session = await query(
     `select id, status, created_at, updated_at from ai_chat_sessions where id = $1`,
     [sessionId],
@@ -80,13 +104,21 @@ export async function getSessionMessages(sessionId) {
 }
 
 export async function getAssistantIntegration() {
-  const result = await query(
-    `select id, service_name, is_enabled, config, updated_at
-       from integrations
-      where service_name = 'ai_assistant'
-      limit 1`,
-  );
-  return result.rows[0] || null;
+  const stored = localMode()
+    ? local.getAssistant()
+    : (await query(
+        `select id, service_name, is_enabled, config, updated_at
+           from integrations
+          where service_name = 'ai_assistant'
+          limit 1`,
+      )).rows[0] || null;
+  const config = asConfig(stored?.config);
+  if (stored?.is_enabled && String(config.api_key || "").trim()) return stored;
+  if (localMode()) {
+    const fromEnv = envAssistant();
+    if (fromEnv) return fromEnv;
+  }
+  return stored;
 }
 
 function maskKey(value) {
@@ -107,6 +139,7 @@ export async function getAssistantPublicConfig() {
     model: String(config.model || ""),
     hasKey: Boolean(key),
     preview: maskKey(key),
+    storage: localMode() ? "local-files" : "postgres",
   };
 }
 
@@ -120,7 +153,11 @@ export async function saveAssistantConfig(input) {
     api_key: nextKey || String(prev.api_key || ""),
   };
   const enabled = Boolean(input.is_enabled);
-  if (current) {
+  if (localMode()) {
+    local.saveAssistant(enabled, config);
+    return getAssistantPublicConfig();
+  }
+  if (current && current.id !== "env") {
     await query(
       `update integrations
           set is_enabled = $1,
@@ -203,16 +240,24 @@ export async function postMessage(sessionId, message, localeHint) {
     };
   }
 
-  const session = await query(`select id, status from ai_chat_sessions where id = $1`, [sessionId]);
-  if (!session.rows[0]) {
-    return { ok: false, code: "invalid", message: locale === "ru" ? "Сессия не найдена." : "Session not found." };
+  let historyRows;
+  if (localMode()) {
+    const found = local.getSession(sessionId);
+    if (!found) {
+      return { ok: false, code: "invalid", message: locale === "ru" ? "Сессия не найдена." : "Session not found." };
+    }
+    local.insertMessage(sessionId, "user", text);
+  } else {
+    const session = await query(`select id, status from ai_chat_sessions where id = $1`, [sessionId]);
+    if (!session.rows[0]) {
+      return { ok: false, code: "invalid", message: locale === "ru" ? "Сессия не найдена." : "Session not found." };
+    }
+    await query(
+      `insert into ai_chat_messages (id, session_id, role, content) values ($1, $2, 'user', $3)`,
+      [newId(), sessionId, text],
+    );
+    await query(`update ai_chat_sessions set updated_at = now() where id = $1`, [sessionId]);
   }
-
-  await query(
-    `insert into ai_chat_messages (id, session_id, role, content) values ($1, $2, 'user', $3)`,
-    [newId(), sessionId, text],
-  );
-  await query(`update ai_chat_sessions set updated_at = now() where id = $1`, [sessionId]);
 
   const integration = await getAssistantIntegration();
   const config = asConfig(integration?.config);
@@ -220,23 +265,35 @@ export async function postMessage(sessionId, message, localeHint) {
     return unavailable(locale);
   }
 
-  const history = await query(
-    `select role, content from ai_chat_messages
-      where session_id = $1
-      order by created_at asc`,
-    [sessionId],
-  );
-  if (history.rows.length > MAX_HISTORY) {
+  if (localMode()) {
+    historyRows = (local.getSessionMessages(sessionId)?.messages || []).map((item) => ({
+      role: item.role,
+      content: item.content,
+    }));
+  } else {
+    const history = await query(
+      `select role, content from ai_chat_messages
+        where session_id = $1
+        order by created_at asc`,
+      [sessionId],
+    );
+    historyRows = history.rows;
+  }
+  if (historyRows.length > MAX_HISTORY) {
     return unavailable(locale);
   }
 
   let reply;
   try {
-    reply = await completeChat(config, history.rows, locale);
+    reply = await completeChat(config, historyRows, locale);
   } catch {
     return unavailable(locale);
   }
 
+  if (localMode()) {
+    const saved = local.insertMessage(sessionId, "assistant", reply);
+    return { ok: true, reply: saved };
+  }
   const saved = await query(
     `insert into ai_chat_messages (id, session_id, role, content)
      values ($1, $2, 'assistant', $3)

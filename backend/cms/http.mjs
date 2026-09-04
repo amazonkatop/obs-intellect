@@ -1,50 +1,17 @@
-import crypto from "node:crypto";
 import { contentCatalog, INTEGRATIONS } from "./catalog.mjs";
+import {
+  clearCookie,
+  isAuthed,
+  isConfigured,
+  login,
+  reset,
+  sessionCookie,
+  setup,
+} from "./auth.mjs";
 import { listUploads, readContent, readIntegrations, saveUpload, writeContent, writeIntegration } from "./store.mjs";
 import { getAssistantPublicConfig, getSessionMessages, listSessions, saveAssistantConfig } from "../chat/service.mjs";
 
-const COOKIE = "obs_admin";
 const MAX_BODY = 8 * 1024 * 1024;
-
-function password() {
-  return String(process.env.ADMIN_PASSWORD || "").trim();
-}
-
-function secret() {
-  const explicit = String(process.env.ADMIN_SECRET || "").trim();
-  if (explicit) return explicit;
-  const pass = password();
-  return crypto.createHash("sha256").update(`obs-admin:${pass}`).digest("hex");
-}
-
-function sign(exp) {
-  return crypto.createHmac("sha256", secret()).update(String(exp)).digest("hex");
-}
-
-function cookieHeader(token, maxAge) {
-  const parts = [`${COOKIE}=${token}`, "Path=/", "HttpOnly", "SameSite=Lax", `Max-Age=${maxAge}`];
-  if (process.env.PUBLIC_SITE_URL?.startsWith("https://")) parts.push("Secure");
-  return parts.join("; ");
-}
-
-function readCookie(req) {
-  const header = req.headers.cookie || "";
-  const match = header.split(/;\s*/).find((part) => part.startsWith(`${COOKIE}=`));
-  return match ? match.slice(COOKIE.length + 1) : "";
-}
-
-function isAuthed(req) {
-  const raw = readCookie(req);
-  const [exp, mac] = raw.split(".");
-  if (!exp || !mac || !password()) return false;
-  if (Number(exp) < Date.now()) return false;
-  const expected = sign(exp);
-  try {
-    return crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expected));
-  } catch {
-    return false;
-  }
-}
 
 function send(res, status, body, extra = {}) {
   const payload = typeof body === "string" ? body : JSON.stringify(body);
@@ -72,6 +39,15 @@ function readBody(req) {
     req.on("end", () => resolve(Buffer.concat(chunks)));
     req.on("error", reject);
   });
+}
+
+async function readJsonBody(req, res) {
+  try {
+    return JSON.parse((await readBody(req)).toString("utf8") || "{}");
+  } catch {
+    send(res, 400, { error: "Invalid JSON" });
+    return null;
+  }
 }
 
 function maskSecret(value) {
@@ -109,39 +85,49 @@ export async function handleCmsRequest(req, res) {
 
   if (!url.pathname.startsWith("/api/cms")) return false;
 
+  if (url.pathname === "/api/cms/me" && req.method === "GET") {
+    send(res, isAuthed(req) ? 200 : 401, { ok: isAuthed(req), configured: isConfigured() });
+    return true;
+  }
+
+  if (url.pathname === "/api/cms/setup" && req.method === "POST") {
+    const body = await readJsonBody(req, res);
+    if (!body) return true;
+    const result = setup(body);
+    if (!result.ok) {
+      send(res, result.status, { error: result.error });
+      return true;
+    }
+    send(res, 200, { ok: true }, { headers: { "set-cookie": sessionCookie() } });
+    return true;
+  }
+
+  if (url.pathname === "/api/cms/reset" && req.method === "POST") {
+    const body = await readJsonBody(req, res);
+    if (!body) return true;
+    const result = reset(body);
+    if (!result.ok) {
+      send(res, result.status, { error: result.error });
+      return true;
+    }
+    send(res, 200, { ok: true }, { headers: { "set-cookie": sessionCookie() } });
+    return true;
+  }
+
   if (url.pathname === "/api/cms/login" && req.method === "POST") {
-    if (!password()) {
-      send(res, 503, { error: "Задайте ADMIN_PASSWORD в окружении сервера." });
+    const body = await readJsonBody(req, res);
+    if (!body) return true;
+    const result = login(body.password);
+    if (!result.ok) {
+      send(res, result.status, { error: result.error });
       return true;
     }
-    let body = {};
-    try {
-      body = JSON.parse((await readBody(req)).toString("utf8") || "{}");
-    } catch {
-      send(res, 400, { error: "Invalid JSON" });
-      return true;
-    }
-    const given = String(body.password || "");
-    const expected = password();
-    const a = Buffer.from(given);
-    const b = Buffer.from(expected);
-    const ok = a.length === b.length && crypto.timingSafeEqual(a, b);
-    if (!ok) {
-      send(res, 401, { error: "Неверный пароль." });
-      return true;
-    }
-    const exp = Date.now() + 1000 * 60 * 60 * 12;
-    send(res, 200, { ok: true }, { headers: { "set-cookie": cookieHeader(`${exp}.${sign(exp)}`, 60 * 60 * 12) } });
+    send(res, 200, { ok: true }, { headers: { "set-cookie": sessionCookie() } });
     return true;
   }
 
   if (url.pathname === "/api/cms/logout" && req.method === "POST") {
-    send(res, 200, { ok: true }, { headers: { "set-cookie": cookieHeader("", 0) } });
-    return true;
-  }
-
-  if (url.pathname === "/api/cms/me" && req.method === "GET") {
-    send(res, isAuthed(req) ? 200 : 401, { ok: isAuthed(req), configured: Boolean(password()) });
+    send(res, 200, { ok: true }, { headers: { "set-cookie": clearCookie() } });
     return true;
   }
 
@@ -239,7 +225,7 @@ export async function handleCmsRequest(req, res) {
     try {
       send(res, 200, await getAssistantPublicConfig());
     } catch (error) {
-      send(res, 503, { error: "Нет подключения к PostgreSQL. Выполните db/chat.sql и задайте DATABASE_URL." });
+      send(res, 503, { error: "Не удалось прочитать настройки ассистента." });
     }
     return true;
   }
@@ -255,7 +241,7 @@ export async function handleCmsRequest(req, res) {
     try {
       send(res, 200, { ok: true, item: await saveAssistantConfig(body) });
     } catch (error) {
-      send(res, 503, { error: "Не удалось сохранить интеграцию. Проверьте DATABASE_URL и таблицу integrations." });
+      send(res, 503, { error: "Не удалось сохранить интеграцию ассистента." });
     }
     return true;
   }
@@ -264,7 +250,7 @@ export async function handleCmsRequest(req, res) {
     try {
       send(res, 200, { sessions: await listSessions() });
     } catch {
-      send(res, 503, { error: "Нет подключения к PostgreSQL." });
+      send(res, 503, { error: "Не удалось загрузить диалоги." });
     }
     return true;
   }
@@ -279,7 +265,7 @@ export async function handleCmsRequest(req, res) {
       }
       send(res, 200, detail);
     } catch {
-      send(res, 503, { error: "Нет подключения к PostgreSQL." });
+      send(res, 503, { error: "Не удалось загрузить диалоги." });
     }
     return true;
   }

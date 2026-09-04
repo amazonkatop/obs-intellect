@@ -2,7 +2,7 @@
 
 ## AI audit chat
 
-Working skeleton is on `/ru/ai-audit` (English `/ai-audit`): session + message API, history in PostgreSQL, admin Integrations + Dialogs.
+Working skeleton is on `/ru/ai-audit` (English `/ai-audit`): session + message API, history in `data/chat/store.json` without Postgres or in PostgreSQL when `DATABASE_URL` is set, admin Integrations + Dialogs.
 
 Not in this slice (separate design later):
 

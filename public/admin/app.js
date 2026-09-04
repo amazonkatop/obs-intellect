@@ -1,5 +1,7 @@
 (function () {
   var loginForm = document.querySelector("[data-admin-login]");
+  var setupForm = document.querySelector("[data-admin-setup]");
+  var resetForm = document.querySelector("[data-admin-reset]");
   var logoutBtn = document.querySelector("[data-admin-logout]");
   var siteRoot = document.querySelector("[data-admin-site]");
   var filesRoot = document.querySelector("[data-admin-files]");
@@ -25,12 +27,7 @@
 
   function requireAdmin() {
     return api("/api/cms/me").then(function (result) {
-      if (result.res.status === 503 || (result.data && result.data.configured === false)) {
-        document.body.innerHTML =
-          '<div class="wrap py-24"><h1 class="page-h1">Админка ещё не включена</h1><p class="mt-4 text-muted">Задайте ADMIN_PASSWORD в переменных окружения сервера и перезапустите его. Пароль не хранится в git.</p></div>';
-        throw new Error("unconfigured");
-      }
-      if (!result.res.ok) {
+      if (!result.data || !result.data.ok) {
         location.replace("/ru/admin/login");
         throw new Error("auth");
       }
@@ -45,18 +42,74 @@
     });
   }
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      var status = loginForm.querySelector("[data-login-status]");
-      var password = loginForm.querySelector('[name="password"]').value;
-      api("/api/cms/login", { method: "POST", body: JSON.stringify({ password: password }) }).then(function (result) {
-        if (!result.res.ok) {
-          status.textContent = result.data.error || "Не удалось войти.";
+  if (loginForm || setupForm || resetForm) {
+    var boot = document.querySelector("[data-auth-boot]");
+    var copy = document.querySelector("[data-auth-copy]");
+
+    function showPanel(name) {
+      if (setupForm) setupForm.hidden = name !== "setup";
+      if (loginForm) loginForm.hidden = name !== "login";
+      if (resetForm) resetForm.hidden = name !== "reset";
+      if (boot) boot.hidden = true;
+      if (copy) {
+        copy.textContent =
+          name === "setup"
+            ? "Придумайте пароль и укажите почту администратора. Эта почта понадобится, если пароль забудете."
+            : name === "reset"
+              ? "Укажите почту администратора и задайте новый пароль."
+              : "Введите пароль. Если забыли — создайте новый по почте администратора.";
+      }
+    }
+
+    function bindAuthForm(form, path) {
+      if (!form) return;
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var status = form.querySelector("[data-login-status]");
+        var passwordInput = form.querySelector('[name="password"]');
+        var repeatInput = form.querySelector('[name="repeat"]');
+        var emailInput = form.querySelector('[name="email"]');
+        var password = passwordInput ? passwordInput.value : "";
+        var repeat = repeatInput ? repeatInput.value : "";
+        if (repeatInput && password !== repeat) {
+          status.textContent = "Пароли не совпадают.";
           return;
         }
-        location.href = "/ru/admin";
+        var body = { password: password, repeat: repeat };
+        if (emailInput) body.email = emailInput.value.trim();
+        api(path, { method: "POST", body: JSON.stringify(body) }).then(function (result) {
+          if (!result.res.ok) {
+            status.textContent = (result.data && result.data.error) || "Не удалось сохранить.";
+            return;
+          }
+          location.href = "/ru/admin";
+        });
       });
+    }
+
+    var showReset = document.querySelector("[data-show-reset]");
+    var showLogin = document.querySelector("[data-show-login]");
+    if (showReset) {
+      showReset.addEventListener("click", function () {
+        showPanel("reset");
+      });
+    }
+    if (showLogin) {
+      showLogin.addEventListener("click", function () {
+        showPanel("login");
+      });
+    }
+
+    bindAuthForm(setupForm, "/api/cms/setup");
+    bindAuthForm(resetForm, "/api/cms/reset");
+    bindAuthForm(loginForm, "/api/cms/login");
+
+    api("/api/cms/me").then(function (result) {
+      if (result.data && result.data.ok) {
+        location.replace("/ru/admin");
+        return;
+      }
+      showPanel(result.data && result.data.configured ? "login" : "setup");
     });
     return;
   }
@@ -215,6 +268,7 @@
     }).then(function (results) {
       var aiResult = results[0];
       var result = results[1];
+      var ai = (aiResult.res.ok && aiResult.data) || {};
       var aiCard = integrationsRoot.querySelector("[data-ai-card]");
       var root = integrationsRoot.querySelector("[data-integration-list]");
       var status = integrationsRoot.querySelector("[data-int-status]");
@@ -224,10 +278,9 @@
           aiCard.innerHTML =
             '<div class="mt-10 panel"><h2 class="page-h2">AI-ассистент</h2><p class="mt-4 text-sm leading-6 text-muted">' +
             ((aiResult.data && aiResult.data.error) ||
-              "Нет подключения к PostgreSQL. Выполните db/chat.sql и задайте DATABASE_URL.") +
+              "Не удалось загрузить AI-ассистента.") +
             "</p></div>";
         } else {
-          var ai = aiResult.data || {};
           aiCard.innerHTML =
             '<section class="mt-10"><h2 class="page-h2">AI-ассистент</h2><div class="mt-8 panel grid gap-6">' +
             '<label class="block text-sm text-muted">Провайдер<select class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-provider>' +
@@ -237,7 +290,11 @@
             '" /></label>' +
             '<label class="block text-sm text-muted">Модель (необязательно)<input class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-model placeholder="deepseek-chat" /></label>' +
             '<label class="flex items-center gap-3 text-sm"><input type="checkbox" data-ai-enabled /> Включено</label>' +
-            '<p class="text-xs text-muted">Сохранение пишет JSON в integrations.config. Ключ на фронтенд не отдаётся.</p>' +
+            '<p class="text-xs text-muted">' +
+            (ai.storage === "local-files"
+              ? "Локальный режим: ключ пишется в data/chat/store.json, не в браузер. PostgreSQL не нужен."
+              : "Сохранение пишет JSON в integrations.config. Ключ на фронтенд не отдаётся.") +
+            "</p>" +
             "</div></section>";
           var provider = aiCard.querySelector("[data-ai-provider]");
           var model = aiCard.querySelector("[data-ai-model]");
@@ -306,7 +363,10 @@
           });
         });
         chain.then(function () {
-          status.textContent = "Сохранено. Ключ AI-ассистента остаётся в PostgreSQL, не в HTML.";
+          status.textContent =
+            ai.storage === "local-files"
+              ? "Сохранено локально (data/chat/store.json). Ключ не уходит в браузер."
+              : "Сохранено. Ключ AI-ассистента остаётся в PostgreSQL, не в HTML.";
           inputs.forEach(function (input) {
             input.value = "";
           });
@@ -361,7 +421,7 @@
 
       return api("/api/cms/dialogs").then(function (result) {
         if (!result.res.ok) {
-          status.textContent = (result.data && result.data.error) || "Нет подключения к PostgreSQL.";
+          status.textContent = (result.data && result.data.error) || "Не удалось загрузить диалоги.";
           return;
         }
         var sessions = result.data.sessions || [];
