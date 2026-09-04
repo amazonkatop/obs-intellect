@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OBS Intellect">
-  <rect width="64" height="64" fill="#1B2A4A"/>
-  <text x="12" y="42" fill="#FAFAF8" font-family="Georgia, 'Times New Roman', serif" font-size="28">O</text>
-  <circle cx="48" cy="40" r="3.2" fill="#A6822F"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OBS">
+  <rect width="64" height="64" fill="#fafaf8"/>
+  <text x="32" y="42" text-anchor="middle" fill="#12151c" font-family="PT Serif, Georgia, Times New Roman, serif" font-weight="700" font-size="22">OBS</text>
 </svg>

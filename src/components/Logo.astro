@@ -1,12 +1,27 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { compactPath, localeFromAstro } from "../lib/i18n";
+import { SITE } from "../lib/types";
 
-const locale = localeFromAstro(Astro.currentLocale);
-const home = compactPath(getRelativeLocaleUrl(locale, "/"));
-const label = locale === "ru" ? "ОБС Интеллект" : "OBS Intellect";
+interface Props {
+  lang?: "ru" | "en";
+}
+
+const lang = Astro.props.lang ?? localeFromAstro(Astro.currentLocale, Astro.url.pathname);
+const home = compactPath(getRelativeLocaleUrl(lang, "/"));
+const mark = lang === "ru" ? SITE.markRu : SITE.mark;
+const word = lang === "ru" ? " Интеллект" : " Intellect";
+const label = lang === "ru" ? SITE.nameRu : SITE.name;
 ---
 
-<a href={home} class="text-base font-semibold leading-none text-ink no-underline sm:text-lg" aria-label={label}>
-  {label}
+<a
+  href={home}
+  class="logo inline-flex items-baseline font-display text-base leading-none no-underline sm:text-lg"
+  style="color: var(--color-text)"
+  aria-label={label}
+>
+  <span class="max-sm:hidden">
+    <span class="font-bold">{mark}</span><span class="font-normal">{word}</span>
+  </span>
+  <span class="font-bold sm:hidden">{mark}</span>
 </a>

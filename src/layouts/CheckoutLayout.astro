@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import PayMarks from "../components/PayMarks.astro";
 import Seo from "../components/Seo.astro";
+import Logo from "../components/Logo.astro";
 import { LEGAL_PATHS } from "../lib/pay";
 import { localeFromAstro } from "../lib/i18n";
 import { SITE } from "../lib/types";
@@ -13,9 +14,8 @@ interface Props {
   robots?: string;
 }
 
-const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
+const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale, Astro.url.pathname);
 const { title, description, robots = "noindex,nofollow" } = Astro.props;
-const home = locale === "ru" ? "/ru" : "/";
 const store = locale === "ru" ? "/ru/pay" : "/pay";
 ---
 
@@ -37,7 +37,6 @@ const store = locale === "ru" ? "/ru/pay" : "/pay";
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -50,9 +49,7 @@ const store = locale === "ru" ? "/ru/pay" : "/pay";
     <a class="skip-link" href="#content">{locale === "ru" ? "К содержанию" : "Skip to content"}</a>
     <header class="border-b border-line">
       <div class="wrap flex items-center justify-between py-5">
-        <a href={home} class="text-base font-semibold text-ink no-underline sm:text-lg">
-          {locale === "ru" ? "ОБС Интеллект" : SITE.name}
-        </a>
+        <Logo lang={locale} />
         <div class="flex items-center gap-4 text-xs">
           <a href={store} class="text-primary no-underline hover:underline">
             {locale === "ru" ? "Оплата" : "Pay"}

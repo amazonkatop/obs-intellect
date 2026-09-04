@@ -1,0 +1,35 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+
+const seed = fs.readFileSync(path.resolve("db/seed/obs-brandbook.md"), "utf8");
+---
+
+<AdminLayout title="Брендбук" tab="brandbook">
+  <div class="wrap py-16 md:py-24" data-admin-brandbook>
+    <p class="badge">Внутри</p>
+    <h1 class="page-h1 mt-4">Брендбук</h1>
+    <p class="mt-5 max-w-2xl text-base leading-7 text-muted">
+      Внутренний справочник. На сайт как отдельная страница не публикуется. Markdown можно править и сохранить.
+    </p>
+    <label class="mt-10 block text-sm text-muted" for="brand-title">Название</label>
+    <input
+      id="brand-title"
+      class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink"
+      data-brand-title
+      value="Брендбук OBS"
+    />
+    <label class="mt-6 block text-sm text-muted" for="brand-content">Текст (Markdown)</label>
+    <textarea
+      id="brand-content"
+      class="mt-1 min-h-[28rem] w-full border border-line bg-canvas px-3 py-2 font-mono text-sm leading-6 text-ink"
+      rows="28"
+      data-brand-content
+    >{seed}</textarea>
+    <div class="mt-6 flex flex-wrap items-center gap-4">
+      <button type="button" class="btn-primary" data-brand-save>Сохранить</button>
+      <p class="text-sm text-muted" data-brand-status></p>
+    </div>
+  </div>
+</AdminLayout>

@@ -6,7 +6,11 @@ import ThemeToggle from "./ThemeToggle.astro";
 import { HEADER_LINKS } from "../lib/copy/nav";
 import { compactPath, IT_ACCREDITATION_PATH, localeFromAstro } from "../lib/i18n";
 
-const locale = localeFromAstro(Astro.currentLocale);
+interface Props {
+  locale?: "en" | "ru";
+}
+
+const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale, Astro.url.pathname);
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 
 const links = [
@@ -22,7 +26,7 @@ const links = [
 
 <header class="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-sm">
   <div class="wrap flex items-center justify-between gap-6 py-4 md:py-5">
-    <Logo />
+    <Logo lang={locale} />
 
     <input id="nav-toggle" class="peer sr-only" type="checkbox" />
 

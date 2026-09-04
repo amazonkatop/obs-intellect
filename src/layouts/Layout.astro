@@ -16,7 +16,7 @@ interface Props {
   chat?: boolean;
 }
 
-const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale);
+const locale = Astro.props.locale ?? localeFromAstro(Astro.currentLocale, Astro.url.pathname);
 const { title, description, schema = [], cmsTitle, cmsDescription, chat = false } = Astro.props;
 const jsonLd = {
   "@context": "https://schema.org",
@@ -25,7 +25,7 @@ const jsonLd = {
       "@type": "Organization",
       "@id": `${Astro.site?.toString() ?? ""}#org`,
       name: SITE.legalShort,
-      alternateName: SITE.name,
+      alternateName: locale === "ru" ? SITE.nameRu : SITE.name,
       url: Astro.site?.toString(),
       email: SITE.email,
       description: locale === "ru" ? SITE.descriptionRu : SITE.description,
@@ -53,7 +53,6 @@ const jsonLd = {
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -88,11 +87,11 @@ const jsonLd = {
   </head>
   <body class:list={["flex flex-col bg-canvas font-sans text-ink", chat ? "h-dvh overflow-hidden" : "min-h-screen"]}>
     <a class="skip-link" href="#content">{locale === "ru" ? "К содержанию" : "Skip to content"}</a>
-    <Header />
+    <Header locale={locale} />
     <main id="content" class:list={["flex-1", chat && "flex min-h-0 flex-col"]}>
       <slot />
     </main>
-    {!chat && <Footer />}
+    {!chat && <Footer locale={locale} />}
     <script is:inline src="/cms/apply.js"></script>
   </body>
 </html>

@@ -418,7 +418,7 @@ export const LANDINGS: Landing[] = [
         h2: L("Digital twin of the business", "Цифровой двойник бизнеса"),
         body: L(
           "The same platform is used to build a digital twin of the operating model — the layer on which OBS Intellect’s own infrastructure runs, including the OBS Pulse line (currently in research and development). For clients we can apply the same discipline without exposing the internals.",
-          "На той же платформе строится цифровой двойник операционной модели — слой, на котором стоит инфраструктура OBS Intellect, включая линейку OBS Pulse (стадия НИОКР). Для заказчиков применяем ту же дисциплину, не раскрывая внутреннее устройство.",
+          "На той же платформе строится цифровой двойник операционной модели — слой, на котором стоит инфраструктура ОБС Интеллект, включая линейку OBS Pulse (стадия НИОКР). Для заказчиков применяем ту же дисциплину, не раскрывая внутреннее устройство.",
         ),
       },
       {

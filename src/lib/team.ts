@@ -28,7 +28,7 @@ export const TEAM: TeamMember[] = [
     bioEn:
       "Valentina founded OBS Intellect as a business transformation partner: understand the company first, then use the firm’s own SaaS and AI to speed analysis and delivery, then implement the change and own the result. She sets development strategy and authored the digital-twin SaaS the company’s infrastructure runs on, including OBS Pulse.",
     bioRu:
-      "Валентина основала OBS Intellect как партнёра по трансформации бизнеса: сначала понять компанию, затем с помощью собственной SaaS-платформы и AI ускорить аналитику и разработку, после этого реализовать изменения и отвечать за результат. Ведёт стратегию развития. Автор SaaS цифрового двойника бизнеса — на этой основе работает инфраструктура компании, включая линейку OBS Pulse.",
+      "Валентина основала ОБС Интеллект как партнёра по трансформации бизнеса: сначала понять компанию, затем с помощью собственной SaaS-платформы и AI ускорить аналитику и разработку, после этого реализовать изменения и отвечать за результат. Ведёт стратегию развития. Автор SaaS цифрового двойника бизнеса — на этой основе работает инфраструктура компании, включая линейку OBS Pulse.",
     focusEn: ["Company strategy", "Digital twin SaaS", "Product architecture", "Market demand"],
     focusRu: ["Стратегия развития", "SaaS цифрового двойника", "Продуктовая архитектура", "Рыночный спрос"],
   },

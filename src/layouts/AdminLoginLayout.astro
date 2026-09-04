@@ -1,5 +1,7 @@
 ---
 import "../styles/global.css";
+import BrandIcons from "../components/BrandIcons.astro";
+import Logo from "../components/Logo.astro";
 ---
 
 <!doctype html>
@@ -18,16 +20,20 @@ import "../styles/global.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Вход в админку — OBS Intellect</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Вход в админку — ОБС Интеллект</title>
+    <BrandIcons lang="ru" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/admin/admin.css" />
   </head>
   <body class="flex min-h-screen flex-col bg-canvas font-sans text-ink">
     <header class="border-b border-line">
       <div class="wrap py-5">
-        <p class="text-base font-semibold sm:text-lg">ОБС Интеллект</p>
+        <Logo lang="ru" />
       </div>
     </header>
     <main class="flex-1">

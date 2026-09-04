@@ -343,4 +343,5 @@ end
 $$;
 
 -- Runtime AI chat, leads, integrations, admin_users: run db/chat.sql on the same cluster.
+-- Brandbook (admin only): run db/brand.sql, then node scripts/seed-brandbook.mjs.
 -- The Node process (`npm start` / `npm run dev`) needs INSERT/UPDATE on those tables.

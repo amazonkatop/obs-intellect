@@ -11,6 +11,7 @@ The public site stays static HTML. This module is a small authenticated API:
 - `GET|PUT /api/cms/integrations` — T-Kassa, forms, Pulse (file store, gitignored)
 - `GET|PUT /api/cms/ai-assistant` — local `data/chat/store.json` when `DATABASE_URL` is empty; otherwise PostgreSQL `integrations` row `ai_assistant`
 - `GET /api/cms/dialogs` — chat sessions for quality review
+- `GET|PUT /api/cms/brandbook` — internal brandbook (`brand_documents.slug = 'brandbook'`). Not a public page.
 
 Password is created on `/ru/admin/login`. Recovery uses the administrator email. Hash lives in `data/cms/admin.json` (gitignored). Optional: `ADMIN_SECRET` for signing the session cookie, `ADMIN_EMAIL` to override the recovery address.
 

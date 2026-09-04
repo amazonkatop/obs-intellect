@@ -38,8 +38,10 @@ export function locText(locale: Locale, value: { en: string; ru: string }): stri
   return locale === "ru" ? value.ru : value.en;
 }
 
-export function localeFromAstro(currentLocale: string | undefined): Locale {
-  return currentLocale === "ru" ? "ru" : "en";
+export function localeFromAstro(currentLocale: string | undefined, pathname?: string): Locale {
+  if (currentLocale === "ru" || currentLocale === "en") return currentLocale;
+  if (pathname && isRuPath(pathname)) return "ru";
+  return "en";
 }
 
 export function serviceFields(service: ServiceRecord, locale: Locale) {

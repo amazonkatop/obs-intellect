@@ -7,6 +7,7 @@
   var filesRoot = document.querySelector("[data-admin-files]");
   var integrationsRoot = document.querySelector("[data-admin-integrations]");
   var dialogsRoot = document.querySelector("[data-admin-dialogs]");
+  var brandbookRoot = document.querySelector("[data-admin-brandbook]");
 
   function api(path, options) {
     options = options || {};
@@ -23,6 +24,12 @@
         });
       },
     );
+  }
+
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, function (ch) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch];
+    });
   }
 
   function requireAdmin() {
@@ -120,15 +127,25 @@
     }).then(function (result) {
       var fields = result.data.fields || [];
       var values = result.data.values || {};
+      var defaults = {};
+      var defaultsNode = document.getElementById("cms-defaults");
+      if (defaultsNode && defaultsNode.textContent) {
+        try {
+          defaults = JSON.parse(defaultsNode.textContent);
+        } catch (err) {}
+      }
       var list = siteRoot.querySelector("[data-field-list]");
       var locale = "ru";
       var status = siteRoot.querySelector("[data-save-status]");
 
+      function currentValue(key, fallback) {
+        return values[key] || defaults[key] || fallback || "";
+      }
+
       function fill() {
         document.querySelectorAll("[data-cms-input]").forEach(function (input) {
           var key = input.getAttribute("data-cms-input");
-          input.value = values[key] || "";
-          input.placeholder = input.getAttribute("data-placeholder") || "";
+          input.value = currentValue(key, input.value);
         });
         if (!list) return;
         list.innerHTML = "";
@@ -153,7 +170,7 @@
             input.className = "cms-field mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink";
             input.setAttribute("data-cms-input", field.key);
             if (field.kind === "textarea") input.rows = 4;
-            input.value = values[field.key] || "";
+            input.value = currentValue(field.key);
             wrap.appendChild(label);
             wrap.appendChild(input);
           });
@@ -179,7 +196,9 @@
         var entries = {};
         document.querySelectorAll("[data-cms-input]").forEach(function (input) {
           var key = input.getAttribute("data-cms-input");
-          if (input.value.trim()) entries[key] = input.value;
+          var val = input.value;
+          var def = defaults[key] || "";
+          if (val.trim() && val !== def) entries[key] = val;
         });
         Object.keys(values).forEach(function (key) {
           if (!(key in entries) && document.querySelector('[data-cms-input="' + key + '"]') === null) {
@@ -281,14 +300,42 @@
               "Не удалось загрузить AI-ассистента.") +
             "</p></div>";
         } else {
+          var providers =
+            Array.isArray(ai.providers) && ai.providers.length
+              ? ai.providers.slice()
+              : [
+                  { id: "deepseek", label: "DeepSeek", model: "deepseek-chat", help: "" },
+                  { id: "openai", label: "OpenAI", model: "gpt-4o-mini", help: "" },
+                  { id: "proxyapi", label: "ProxyAPI", model: "gpt-4o-mini", help: "" },
+                  { id: "vsegpt", label: "VseGPT", model: "openai/gpt-4o-mini", help: "" },
+                  { id: "gigachat", label: "GigaChat (Сбер)", model: "GigaChat", help: "" },
+                  { id: "yandexgpt", label: "YandexGPT", model: "yandexgpt/latest", help: "" },
+                ];
+          if (ai.provider && !providers.some(function (item) { return item.id === ai.provider; })) {
+            providers.push({ id: ai.provider, label: ai.provider, model: ai.model || "", help: "" });
+          }
+          var options = providers
+            .map(function (item) {
+              return (
+                '<option value="' +
+                escapeHtml(item.id) +
+                '">' +
+                escapeHtml(item.label) +
+                "</option>"
+              );
+            })
+            .join("");
           aiCard.innerHTML =
             '<section class="mt-10"><h2 class="page-h2">AI-ассистент</h2><div class="mt-8 panel grid gap-6">' +
             '<label class="block text-sm text-muted">Провайдер<select class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-provider>' +
-            '<option value="deepseek">DeepSeek</option><option value="openai">OpenAI</option></select></label>' +
+            options +
+            "</select></label>" +
+            '<p class="text-xs leading-5 text-muted" data-ai-help></p>' +
             '<label class="block text-sm text-muted">API-ключ<input class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-key type="password" autocomplete="off" placeholder="' +
-            (ai.hasKey ? ai.preview : "не задано") +
+            escapeHtml(ai.hasKey ? ai.preview : "не задано") +
             '" /></label>' +
             '<label class="block text-sm text-muted">Модель (необязательно)<input class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-model placeholder="deepseek-chat" /></label>' +
+            '<label class="block text-sm text-muted">Base URL (необязательно)<input class="mt-1 w-full border border-line bg-canvas px-3 py-2 text-ink" data-ai-base placeholder="https://api.proxyapi.ru/openai/v1" /></label>' +
             '<label class="flex items-center gap-3 text-sm"><input type="checkbox" data-ai-enabled /> Включено</label>' +
             '<p class="text-xs text-muted">' +
             (ai.storage === "local-files"
@@ -298,10 +345,25 @@
             "</div></section>";
           var provider = aiCard.querySelector("[data-ai-provider]");
           var model = aiCard.querySelector("[data-ai-model]");
+          var baseUrl = aiCard.querySelector("[data-ai-base]");
+          var help = aiCard.querySelector("[data-ai-help]");
           var enabled = aiCard.querySelector("[data-ai-enabled]");
-          if (provider) provider.value = ai.provider === "openai" ? "openai" : "deepseek";
+          function syncProviderHelp() {
+            var selected =
+              providers.find(function (item) {
+                return item.id === (provider && provider.value);
+              }) || {};
+            if (help) help.textContent = selected.help || "";
+            if (model) model.placeholder = selected.model || "модель из кабинета";
+          }
+          if (provider) {
+            provider.value = ai.provider || "deepseek";
+            provider.addEventListener("change", syncProviderHelp);
+          }
           if (model) model.value = ai.model || "";
+          if (baseUrl) baseUrl.value = ai.base_url || "";
           if (enabled) enabled.checked = Boolean(ai.is_enabled);
+          syncProviderHelp();
         }
       }
 
@@ -348,6 +410,9 @@
                 provider: integrationsRoot.querySelector("[data-ai-provider]").value,
                 api_key: keyInput ? keyInput.value.trim() : "",
                 model: integrationsRoot.querySelector("[data-ai-model]").value.trim(),
+                base_url: (integrationsRoot.querySelector("[data-ai-base]") || {}).value
+                  ? integrationsRoot.querySelector("[data-ai-base]").value.trim()
+                  : "",
                 is_enabled: integrationsRoot.querySelector("[data-ai-enabled]").checked,
               }),
             });
@@ -446,6 +511,47 @@
             );
           })
           .join("");
+      });
+    });
+  }
+
+  if (brandbookRoot) {
+    requireAdmin().then(function () {
+      return api("/api/cms/brandbook");
+    }).then(function (result) {
+      var status = brandbookRoot.querySelector("[data-brand-status]");
+      var title = brandbookRoot.querySelector("[data-brand-title]");
+      var content = brandbookRoot.querySelector("[data-brand-content]");
+      if (!result.res.ok) {
+        status.textContent = (result.data && result.data.error) || "Не удалось загрузить брендбук.";
+        return;
+      }
+      var item = result.data || {};
+      if (title) title.value = item.title || "";
+      if (content) content.value = item.content_markdown || "";
+      if (item.missing) {
+        status.textContent = "В PostgreSQL записи ещё нет. Сохраните здесь или выполните node scripts/seed-brandbook.mjs.";
+      } else if (item.storage === "local-files") {
+        status.textContent = "Локальный режим: пишется в data/cms/brand-documents.json, пока нет DATABASE_URL.";
+      }
+      brandbookRoot.querySelector("[data-brand-save]").addEventListener("click", function () {
+        status.textContent = "Сохранение…";
+        api("/api/cms/brandbook", {
+          method: "PUT",
+          body: JSON.stringify({
+            title: title ? title.value.trim() : "",
+            content_markdown: content ? content.value : "",
+          }),
+        }).then(function (saved) {
+          if (!saved.res.ok) {
+            status.textContent = (saved.data && saved.data.error) || "Не удалось сохранить.";
+            return;
+          }
+          status.textContent =
+            saved.data.item && saved.data.item.storage === "local-files"
+              ? "Сохранено локально. На сайте не публикуется."
+              : "Сохранено в PostgreSQL. На сайте не публикуется.";
+        });
       });
     });
   }

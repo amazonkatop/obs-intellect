@@ -54,6 +54,9 @@ export interface LegalInfo {
 
 export const SITE = {
   name: "OBS Intellect",
+  nameRu: "ОБС Интеллект",
+  mark: "OBS",
+  markRu: "ОБС",
   legalShort: "ООО «ОБС Интеллект»",
   tagline: "First the business. Then the technology.",
   description:

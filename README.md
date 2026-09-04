@@ -106,9 +106,9 @@ The webhook stub lives in `backend/pulse/payment.ts` and is **not** served by As
 
 Admin UI: `/ru/admin`. First visit sets the password on `/ru/admin/login` (plus the administrator email). Forgot password: enter that email and create a new one. Hash is stored in `data/cms/admin.json` (gitignored), not in `.env`.
 
-Local without PostgreSQL: leave `DATABASE_URL` empty. Sessions and the assistant key go to `data/chat/store.json` (gitignored). In admin → Интеграции paste the model key and enable the card, **or** set `DEEPSEEK_API_KEY` in `.env` and skip admin.
+Local without PostgreSQL: leave `DATABASE_URL` empty. Sessions and the assistant key go to `data/chat/store.json` (gitignored). In admin → Интеграции choose a provider (ProxyAPI, VseGPT, GigaChat, YandexGPT, DeepSeek, OpenAI), paste the key and enable the card. Optional env fallback: `PROXYAPI_API_KEY`, `GIGACHAT_API_KEY`, `YANDEXGPT_API_KEY`, `VSEGPT_API_KEY`, `DEEPSEEK_API_KEY`, or `AI_ASSISTANT_API_KEY`.
 
-With PostgreSQL: run `db/chat.sql` (after `db/schema.sql`). The AI assistant card writes `integrations` where `service_name = 'ai_assistant'`.
+With PostgreSQL: run `db/chat.sql` (after `db/schema.sql`). The AI assistant card writes `integrations` where `service_name = 'ai_assistant'`. Brandbook: run `db/brand.sql`, then `npm run seed:brandbook`. Edit it at `/ru/admin/brandbook` — it is not a public page.
 
 Then `/ru/ai-audit` talks to the model via `POST /api/chat/message`. Chat API is served by `npm run dev` (Vite plugin) and Timeweb `npm start`. Netlify test deploys the `/api/chat/*` function; set `DATABASE_URL` in the Netlify **runtime** environment, not only at build.
 

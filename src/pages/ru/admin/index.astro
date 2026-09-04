@@ -1,5 +1,8 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { cmsBuiltInValues } from "../../../lib/cms-defaults";
+
+const defaults = cmsBuiltInValues();
 ---
 
 <AdminLayout title="Тексты сайта" tab="site">
@@ -9,8 +12,8 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
         <p class="badge">Редактор</p>
         <h1 class="page-h1 mt-3">Сайт</h1>
         <p class="mt-3 max-w-2xl text-base leading-7 text-muted">
-          Поля выглядят как блоки на главной. Пустое поле = текст из кода. Сохранение пишет /cms/content.json —
-          посетитель видит правку сразу, без деплоя.
+          В полях уже стоит текущий текст сайта. Если вернуть формулировку из кода — очищать поле не нужно:
+          достаточно оставить исходный текст. Сохранение пишет только изменённые строки в /cms/content.json.
         </p>
       </div>
       <div class="flex items-center gap-4 text-xs">
@@ -23,40 +26,40 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
       <section class="border-b border-line">
         <div class="wrap grid gap-12 py-16 md:grid-cols-12 md:py-24">
           <div class="md:col-span-7">
-            <textarea class="cms-field page-h1 max-w-3xl" rows="3" data-cms-input="home.ru.h1"></textarea>
+            <textarea class="cms-field page-h1 max-w-3xl" rows="3" data-cms-input="home.ru.h1">{defaults["home.ru.h1"]}</textarea>
             <p class="mt-6">
-              <textarea class="cms-field mt-6 max-w-xl text-base leading-7 text-muted md:text-lg" rows="4" data-cms-input="home.ru.lead"></textarea>
+              <textarea class="cms-field mt-6 max-w-xl text-base leading-7 text-muted md:text-lg" rows="4" data-cms-input="home.ru.lead">{defaults["home.ru.lead"]}</textarea>
             </p>
             <div class="mt-8 flex flex-wrap items-center gap-3">
-              <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaPrimary" />
-              <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaSecondary" />
+              <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaPrimary" value={defaults["home.ru.ctaPrimary"]} />
+              <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaSecondary" value={defaults["home.ru.ctaSecondary"]} />
             </div>
           </div>
           <aside class="flex flex-col justify-end gap-5 border-t border-line pt-8 md:col-span-5 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-            <input class="cms-field font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted" data-cms-input="home.ru.formula" />
-            <textarea class="cms-field text-xl font-semibold leading-7" rows="2" data-cms-input="home.ru.manifestoH2"></textarea>
-            <textarea class="cms-field text-base leading-7 text-muted" rows="5" data-cms-input="home.ru.manifesto"></textarea>
+            <input class="cms-field font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted" data-cms-input="home.ru.formula" value={defaults["home.ru.formula"]} />
+            <textarea class="cms-field text-xl font-semibold leading-7" rows="2" data-cms-input="home.ru.manifestoH2">{defaults["home.ru.manifestoH2"]}</textarea>
+            <textarea class="cms-field text-base leading-7 text-muted" rows="5" data-cms-input="home.ru.manifesto">{defaults["home.ru.manifesto"]}</textarea>
           </aside>
         </div>
       </section>
       <section class="border-b border-line">
         <div class="wrap py-20">
-          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.startPointH2"></textarea>
-          <textarea class="cms-field mt-5 max-w-3xl text-base leading-7 text-muted" rows="5" data-cms-input="home.ru.startPoint"></textarea>
+          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.startPointH2">{defaults["home.ru.startPointH2"]}</textarea>
+          <textarea class="cms-field mt-5 max-w-3xl text-base leading-7 text-muted" rows="5" data-cms-input="home.ru.startPoint">{defaults["home.ru.startPoint"]}</textarea>
         </div>
       </section>
       <section class="border-b border-line">
         <div class="wrap py-20">
-          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.howH2"></textarea>
+          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.howH2">{defaults["home.ru.howH2"]}</textarea>
         </div>
       </section>
       <section class="border-b border-line">
         <div class="wrap py-20">
-          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.finalH2"></textarea>
-          <textarea class="cms-field mt-5 max-w-2xl text-base leading-7 text-muted" rows="3" data-cms-input="home.ru.final"></textarea>
+          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.ru.finalH2">{defaults["home.ru.finalH2"]}</textarea>
+          <textarea class="cms-field mt-5 max-w-2xl text-base leading-7 text-muted" rows="3" data-cms-input="home.ru.final">{defaults["home.ru.final"]}</textarea>
           <div class="mt-8 flex flex-wrap items-center gap-3">
-            <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaPrimary" />
-            <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaSecondary" />
+            <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaPrimary" value={defaults["home.ru.ctaPrimary"]} />
+            <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.ru.ctaSecondary" value={defaults["home.ru.ctaSecondary"]} />
           </div>
         </div>
       </section>
@@ -66,29 +69,30 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
       <section class="border-b border-line">
         <div class="wrap grid gap-12 py-16 md:grid-cols-12 md:py-24">
           <div class="md:col-span-7">
-            <textarea class="cms-field page-h1 max-w-3xl" rows="3" data-cms-input="home.en.h1"></textarea>
-            <textarea class="cms-field mt-6 max-w-xl text-base leading-7 text-muted md:text-lg" rows="4" data-cms-input="home.en.lead"></textarea>
+            <textarea class="cms-field page-h1 max-w-3xl" rows="3" data-cms-input="home.en.h1">{defaults["home.en.h1"]}</textarea>
+            <textarea class="cms-field mt-6 max-w-xl text-base leading-7 text-muted md:text-lg" rows="4" data-cms-input="home.en.lead">{defaults["home.en.lead"]}</textarea>
             <div class="mt-8 flex flex-wrap items-center gap-3">
-              <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.en.ctaPrimary" />
-              <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.en.ctaSecondary" />
+              <input class="btn-primary cms-field w-auto min-w-[12rem]" data-cms-input="home.en.ctaPrimary" value={defaults["home.en.ctaPrimary"]} />
+              <input class="btn-secondary cms-field w-auto min-w-[12rem]" data-cms-input="home.en.ctaSecondary" value={defaults["home.en.ctaSecondary"]} />
             </div>
           </div>
           <aside class="flex flex-col justify-end gap-5 border-t border-line pt-8 md:col-span-5 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-            <input class="cms-field font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted" data-cms-input="home.en.formula" />
-            <textarea class="cms-field text-xl font-semibold leading-7" rows="2" data-cms-input="home.en.manifestoH2"></textarea>
-            <textarea class="cms-field text-base leading-7 text-muted" rows="5" data-cms-input="home.en.manifesto"></textarea>
+            <input class="cms-field font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-muted" data-cms-input="home.en.formula" value={defaults["home.en.formula"]} />
+            <textarea class="cms-field text-xl font-semibold leading-7" rows="2" data-cms-input="home.en.manifestoH2">{defaults["home.en.manifestoH2"]}</textarea>
+            <textarea class="cms-field text-base leading-7 text-muted" rows="5" data-cms-input="home.en.manifesto">{defaults["home.en.manifesto"]}</textarea>
           </aside>
         </div>
       </section>
       <section class="border-b border-line">
         <div class="wrap py-20">
-          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.en.finalH2"></textarea>
-          <textarea class="cms-field mt-5 max-w-2xl text-base leading-7 text-muted" rows="3" data-cms-input="home.en.final"></textarea>
+          <textarea class="cms-field page-h2 max-w-3xl" rows="2" data-cms-input="home.en.finalH2">{defaults["home.en.finalH2"]}</textarea>
+          <textarea class="cms-field mt-5 max-w-2xl text-base leading-7 text-muted" rows="3" data-cms-input="home.en.final">{defaults["home.en.final"]}</textarea>
         </div>
       </section>
     </div>
 
     <div data-field-list></div>
+    <script is:inline type="application/json" id="cms-defaults" set:html={JSON.stringify(defaults)}></script>
 
     <div class="cms-toolbar">
       <div class="wrap flex flex-wrap items-center justify-between gap-4 py-4">

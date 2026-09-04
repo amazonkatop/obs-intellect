@@ -7,6 +7,7 @@ import {
   SYSTEM_PROMPT,
   UNAVAILABLE,
   WELCOME,
+  providerList,
 } from "./constants.mjs";
 import * as local from "./local-store.mjs";
 
@@ -39,16 +40,32 @@ function localMode() {
 }
 
 function envAssistant() {
-  const key = String(process.env.DEEPSEEK_API_KEY || process.env.AI_ASSISTANT_API_KEY || "").trim();
+  const key = String(
+    process.env.AI_ASSISTANT_API_KEY ||
+      process.env.PROXYAPI_API_KEY ||
+      process.env.GIGACHAT_API_KEY ||
+      process.env.YANDEXGPT_API_KEY ||
+      process.env.VSEGPT_API_KEY ||
+      process.env.DEEPSEEK_API_KEY ||
+      "",
+  ).trim();
   if (!key) return null;
+  const provider =
+    String(process.env.AI_ASSISTANT_PROVIDER || "").trim() ||
+    (process.env.PROXYAPI_API_KEY ? "proxyapi" : "") ||
+    (process.env.GIGACHAT_API_KEY ? "gigachat" : "") ||
+    (process.env.YANDEXGPT_API_KEY ? "yandexgpt" : "") ||
+    (process.env.VSEGPT_API_KEY ? "vsegpt" : "") ||
+    "deepseek";
   return {
     id: "env",
     service_name: "ai_assistant",
     is_enabled: true,
     config: {
-      provider: String(process.env.AI_ASSISTANT_PROVIDER || "deepseek").trim() || "deepseek",
-      model: String(process.env.DEEPSEEK_MODEL || process.env.AI_ASSISTANT_MODEL || "deepseek-chat").trim(),
+      provider,
+      model: String(process.env.AI_ASSISTANT_MODEL || process.env.DEEPSEEK_MODEL || "").trim(),
       api_key: key,
+      base_url: String(process.env.AI_ASSISTANT_BASE_URL || "").trim(),
     },
     updated_at: new Date().toISOString(),
   };
@@ -137,9 +154,11 @@ export async function getAssistantPublicConfig() {
     is_enabled: Boolean(row?.is_enabled),
     provider: String(config.provider || "deepseek"),
     model: String(config.model || ""),
+    base_url: String(config.base_url || ""),
     hasKey: Boolean(key),
     preview: maskKey(key),
     storage: localMode() ? "local-files" : "postgres",
+    providers: providerList(),
   };
 }
 
@@ -151,6 +170,8 @@ export async function saveAssistantConfig(input) {
     provider: String(input.provider || prev.provider || "deepseek").trim() || "deepseek",
     model: String(input.model || "").trim(),
     api_key: nextKey || String(prev.api_key || ""),
+    base_url:
+      input.base_url !== undefined ? String(input.base_url || "").trim() : String(prev.base_url || "").trim(),
   };
   const enabled = Boolean(input.is_enabled);
   if (localMode()) {
@@ -178,26 +199,91 @@ export async function saveAssistantConfig(input) {
 
 function providerEndpoint(config) {
   const name = String(config.provider || "deepseek").toLowerCase();
-  const known = PROVIDERS[name];
-  const url = known?.url || "https://api.deepseek.com/chat/completions";
-  const model = String(config.model || "").trim() || known?.model || "deepseek-chat";
-  return { url, model };
+  const known = PROVIDERS[name] || PROVIDERS.deepseek;
+  const custom = String(config.base_url || "").trim().replace(/\/+$/, "");
+  let kind = known.kind;
+  let url = custom || known.url;
+  if (custom) {
+    if (kind === "yandex" && /completion/i.test(custom) && !/chat\/completions/i.test(custom)) {
+      url = custom;
+    } else if (/\/chat\/completions$/i.test(custom)) {
+      kind = "openai";
+      url = custom;
+    } else {
+      kind = "openai";
+      url = `${custom}/chat/completions`;
+    }
+  }
+  const model = String(config.model || "").trim() || known.model;
+  return { url, model, kind, name };
 }
 
-async function completeChat(config, history, locale) {
-  const { url, model } = providerEndpoint(config);
-  const key = String(config.api_key || "").trim();
-  if (!url || !key) {
-    const error = new Error("missing provider");
-    error.code = "UNAVAILABLE";
-    throw error;
+let gigaCache = { token: "", exp: 0, key: "" };
+
+function gigaExpiry(data) {
+  const at = Number(data?.expires_at || 0);
+  if (at > 1e12) return at;
+  if (at > 1e9) return at * 1000;
+  const seconds = Number(data?.expires_in || 1500);
+  return Date.now() + seconds * 1000;
+}
+
+async function gigaChatToken(apiKey) {
+  if (gigaCache.token && gigaCache.key === apiKey && gigaCache.exp > Date.now() + 30_000) {
+    return gigaCache.token;
   }
-  const welcome = WELCOME[localeOf(locale)];
-  const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    { role: "assistant", content: welcome },
-    ...history.map((item) => ({ role: item.role, content: item.content })),
-  ];
+  if (/^Bearer\s/i.test(apiKey)) return apiKey.replace(/^Bearer\s+/i, "");
+  const basic = apiKey.startsWith("Basic ") ? apiKey : `Basic ${apiKey}`;
+  const scopes = [
+    String(process.env.GIGACHAT_SCOPE || "").trim(),
+    "GIGACHAT_API_PERS",
+    "GIGACHAT_API_B2B",
+    "GIGACHAT_API_CORP",
+  ].filter((item, index, list) => item && list.indexOf(item) === index);
+  let lastError = null;
+  for (const scope of scopes) {
+    try {
+      const response = await fetch("https://ngw.devices.sberbank.ru:9443/api/v2/oauth", {
+        method: "POST",
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          accept: "application/json",
+          authorization: basic,
+          rquid: crypto.randomUUID(),
+        },
+        body: `scope=${encodeURIComponent(scope)}`,
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!response.ok) {
+        lastError = new Error("gigachat oauth");
+        continue;
+      }
+      const data = await response.json();
+      const token = String(data?.access_token || "").trim();
+      if (!token) {
+        lastError = new Error("gigachat token");
+        continue;
+      }
+      gigaCache = { token, exp: gigaExpiry(data), key: apiKey };
+      return token;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  const error = lastError || new Error("gigachat oauth");
+  error.code = "UNAVAILABLE";
+  throw error;
+}
+
+function yandexModelUri(model) {
+  const text = String(model || "").trim();
+  if (!text) return "yandexgpt/latest";
+  if (text.startsWith("gpt://") || text.startsWith("ds://")) return text;
+  if (/^[a-z0-9][a-z0-9-]{4,}\//i.test(text)) return `gpt://${text}`;
+  return text;
+}
+
+async function completeOpenAi(url, key, model, messages) {
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -224,6 +310,60 @@ async function completeChat(config, history, locale) {
     throw error;
   }
   return text.trim();
+}
+
+async function completeYandex(url, key, model, messages) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: key.startsWith("Bearer ") || key.startsWith("Api-Key ") ? key : `Api-Key ${key}`,
+    },
+    body: JSON.stringify({
+      modelUri: yandexModelUri(model),
+      completionOptions: { stream: false, temperature: 0.4, maxTokens: "2000" },
+      messages: messages.map((item) => ({
+        role: item.role === "assistant" ? "assistant" : item.role === "system" ? "system" : "user",
+        text: item.content,
+      })),
+    }),
+    signal: AbortSignal.timeout(60000),
+  });
+  if (!response.ok) {
+    const error = new Error("yandex error");
+    error.code = "UNAVAILABLE";
+    throw error;
+  }
+  const data = await response.json();
+  const text = data?.result?.alternatives?.[0]?.message?.text;
+  if (typeof text !== "string" || !text.trim()) {
+    const error = new Error("empty completion");
+    error.code = "UNAVAILABLE";
+    throw error;
+  }
+  return text.trim();
+}
+
+async function completeChat(config, history, locale) {
+  const { url, model, kind } = providerEndpoint(config);
+  const key = String(config.api_key || "").trim();
+  if (!url || !key) {
+    const error = new Error("missing provider");
+    error.code = "UNAVAILABLE";
+    throw error;
+  }
+  const welcome = WELCOME[localeOf(locale)];
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "assistant", content: welcome },
+    ...history.map((item) => ({ role: item.role, content: item.content })),
+  ];
+  if (kind === "yandex") return completeYandex(url, key, model, messages);
+  if (kind === "gigachat") {
+    const token = await gigaChatToken(key);
+    return completeOpenAi(url, token, model, messages);
+  }
+  return completeOpenAi(url, key, model, messages);
 }
 
 export async function postMessage(sessionId, message, localeHint) {

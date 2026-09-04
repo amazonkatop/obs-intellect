@@ -1,0 +1,13 @@
+---
+interface Props {
+  lang?: "ru" | "en";
+}
+
+const lang = Astro.props.lang === "ru" ? "ru" : "en";
+const svg = lang === "ru" ? "/favicon-ru.svg" : "/favicon.svg";
+const apple = lang === "ru" ? "/apple-touch-icon-ru.png" : "/apple-touch-icon.png";
+---
+
+<link rel="icon" href={svg} type="image/svg+xml" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="apple-touch-icon" href={apple} />

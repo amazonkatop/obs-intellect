@@ -10,6 +10,7 @@ import {
 } from "./auth.mjs";
 import { listUploads, readContent, readIntegrations, saveUpload, writeContent, writeIntegration } from "./store.mjs";
 import { getAssistantPublicConfig, getSessionMessages, listSessions, saveAssistantConfig } from "../chat/service.mjs";
+import { getBrandbook, saveBrandbook } from "./brand.mjs";
 
 const MAX_BODY = 8 * 1024 * 1024;
 
@@ -266,6 +267,30 @@ export async function handleCmsRequest(req, res) {
       send(res, 200, detail);
     } catch {
       send(res, 503, { error: "Не удалось загрузить диалоги." });
+    }
+    return true;
+  }
+
+  if (url.pathname === "/api/cms/brandbook" && req.method === "GET") {
+    try {
+      send(res, 200, await getBrandbook());
+    } catch {
+      send(res, 503, { error: "Не удалось загрузить брендбук. Выполните db/brand.sql и node scripts/seed-brandbook.mjs." });
+    }
+    return true;
+  }
+
+  if (url.pathname === "/api/cms/brandbook" && req.method === "PUT") {
+    const body = await readJsonBody(req, res);
+    if (!body) return true;
+    try {
+      send(res, 200, { ok: true, item: await saveBrandbook(body) });
+    } catch (error) {
+      if (error && error.code === "TOO_LARGE") {
+        send(res, 400, { error: "Текст слишком длинный." });
+        return true;
+      }
+      send(res, 503, { error: "Не удалось сохранить брендбук." });
     }
     return true;
   }

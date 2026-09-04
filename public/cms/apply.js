@@ -14,7 +14,7 @@
       var titleKey = document.documentElement.getAttribute("data-cms-title");
       var descKey = document.documentElement.getAttribute("data-cms-description");
       if (titleKey && typeof data[titleKey] === "string" && data[titleKey]) {
-        var brand = "OBS Intellect";
+        var brand = document.documentElement.lang === "ru" ? "ОБС Интеллект" : "OBS Intellect";
         var full = data[titleKey].indexOf(brand) >= 0 ? data[titleKey] : data[titleKey] + " — " + brand;
         document.title = full;
         var ogTitle = document.querySelector('meta[property="og:title"]');

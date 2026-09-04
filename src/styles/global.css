@@ -37,6 +37,7 @@
   --color-canvas: var(--ds-bg);
   --color-surface: var(--ds-surface);
   --color-ink: var(--ds-text);
+  --color-text: var(--ds-text);
   --color-muted: var(--ds-muted);
   --color-primary: var(--ds-primary);
   --color-on-primary: var(--ds-on-primary);

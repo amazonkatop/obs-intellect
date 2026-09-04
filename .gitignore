@@ -25,6 +25,10 @@ Thumbs.db
 # Admin CMS: secrets and uploaded binaries stay on the server disk
 data/cms/integrations.json
 data/cms/admin.json
+data/cms/brand-documents.json
 data/chat/store.json
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Font cache for scripts/render-brand-icons.mjs
+scripts/.fonts/

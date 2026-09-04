@@ -12,6 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "start": "node scripts/serve-static.mjs",
+    "seed:brandbook": "node scripts/seed-brandbook.mjs",
     "astro": "astro"
   },
   "dependencies": {
