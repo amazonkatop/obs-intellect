@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "International AI implementation studio site. Static HTML via Astro SSG, content from Timeweb Cloud PostgreSQL at build time.",
+  "description": "International AI implementation studio site. Static HTML via Astro SSG, content from VPS PostgreSQL at build time.",
   "engines": {
     "node": ">=22"
   },

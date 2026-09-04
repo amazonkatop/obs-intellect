@@ -298,7 +298,7 @@ async function completeOpenAi(url, key, model, messages) {
     signal: AbortSignal.timeout(60000),
   });
   if (!response.ok) {
-    const error = new Error("provider error");
+    const error = new Error(`provider error ${response.status}`);
     error.code = "UNAVAILABLE";
     throw error;
   }
@@ -402,6 +402,12 @@ export async function postMessage(sessionId, message, localeHint) {
   const integration = await getAssistantIntegration();
   const config = asConfig(integration?.config);
   if (!integration?.is_enabled || !String(config.api_key || "").trim()) {
+    console.warn(
+      "[obs chat] assistant off",
+      "enabled=" + Boolean(integration?.is_enabled),
+      "hasKey=" + Boolean(String(config.api_key || "").trim()),
+      "storage=" + (localMode() ? "local" : "postgres"),
+    );
     return unavailable(locale);
   }
 
@@ -426,7 +432,8 @@ export async function postMessage(sessionId, message, localeHint) {
   let reply;
   try {
     reply = await completeChat(config, historyRows, locale);
-  } catch {
+  } catch (error) {
+    console.error("[obs chat] complete", error && error.code, error && error.message);
     return unavailable(locale);
   }
 

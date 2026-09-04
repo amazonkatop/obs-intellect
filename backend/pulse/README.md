@@ -2,7 +2,7 @@
 
 The marketing site is static Astro. It **must not** host `/api/payment/webhook` and **must not** hold `TKASSA_SECRET_KEY`.
 
-Put these handlers on the Pulse backend (Timeweb app / separate Node service), then:
+Put these handlers on the Pulse backend (a separate Node service, not this marketing site), then:
 
 1. Set env vars on **that** server only (panel → environment). Do not paste keys into chat.
 2. Point T-Kassa Notification URL at `https://<pulse-host>/api/payment/webhook`.

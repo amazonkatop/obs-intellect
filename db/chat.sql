@@ -1,5 +1,5 @@
 -- =============================================================================
--- Runtime chat / leads / integrations / admin (Timeweb PostgreSQL)
+-- Runtime chat / leads / integrations / admin (VPS PostgreSQL)
 -- Run after db/schema.sql. Do not change pulse_* columns — reserved for OBS Pulse.
 -- =============================================================================
 

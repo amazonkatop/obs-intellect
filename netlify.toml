@@ -1,4 +1,4 @@
-# Test hosting on Netlify. Production target: Timeweb Cloud Apps (static `dist/` + Node `npm start` for /api).
+# Public site on Netlify. PostgreSQL lives on the VPS. Timeweb is not in use.
 # Set PUBLIC_SITE_URL and DATABASE_URL in Netlify → Environment variables.
 # Chat API on Netlify needs DATABASE_URL at runtime, not only at build.
 

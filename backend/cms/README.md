@@ -15,4 +15,4 @@ The public site stays static HTML. This module is a small authenticated API:
 
 Password is created on `/ru/admin/login`. Recovery uses the administrator email. Hash lives in `data/cms/admin.json` (gitignored). Optional: `ADMIN_SECRET` for signing the session cookie, `ADMIN_EMAIL` to override the recovery address.
 
-On Netlify the filesystem is read-only at runtime — save from the admin there will fail. Run admin locally (`npm run dev`) or on Timeweb (`npm start`, which now serves the API next to `dist/`).
+On Netlify the filesystem is read-only at runtime — save from the admin there will fail. Run admin locally (`npm run dev`). `npm start` can serve the API next to `dist/` on any Node host with a writable disk.

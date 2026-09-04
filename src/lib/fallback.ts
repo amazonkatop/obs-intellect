@@ -63,7 +63,7 @@ export const fallbackServices: ServiceRecord[] = [
       "Connect the systems you already run: CRM, ERP, BI, APIs, telephony, documents, databases. The job is not another product — it is to make the landscape serve the process.",
     description_ru:
       "Объединить существующие системы: CRM, 1С, ERP, BI, API, телефония, документы, базы данных. Задача — не ещё один продукт, а заставить ландшафт служить процессу.",
-    stack: ["Astro", "Node.js", "Python", "PostgreSQL", "Timeweb Cloud", "Stripe / ЮKassa"],
+    stack: ["Astro", "Node.js", "Python", "PostgreSQL", "Docker", "Stripe / ЮKassa"],
     price_en: "From USD 25,000 · 6–8 weeks",
     price_ru: "От 2 000 000 ₽ · 6–8 недель",
     is_saas: false,
@@ -264,7 +264,8 @@ export const techStack = [
   { name: "TypeScript", noteRu: "типизированная разработка клиентских и серверных приложений" },
   { name: "Astro", noteRu: "статическая генерация сайтов (SSG) без лишнего JavaScript" },
   { name: "PostgreSQL", noteRu: "основная реляционная база данных, в том числе векторный поиск pgvector" },
-  { name: "Timeweb Cloud", noteRu: "хостинг сайта и управляемый PostgreSQL, данные читаются на этапе сборки" },
+  { name: "Docker / Linux VPS", noteRu: "PostgreSQL и служебные контейнеры на виртуальном сервере; данные сайта читаются на этапе сборки" },
+  { name: "Netlify", noteRu: "публикация статического сайта и функции API чата" },
   {
     name: "LLM / RAG",
     noteRu:

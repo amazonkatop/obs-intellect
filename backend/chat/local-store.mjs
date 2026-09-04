@@ -3,7 +3,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const file = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "data", "chat", "store.json");
+function storeFile() {
+  try {
+    const url = import.meta.url;
+    if (typeof url === "string" && url.length > 0) {
+      return path.resolve(path.dirname(fileURLToPath(url)), "..", "..", "data", "chat", "store.json");
+    }
+  } catch {
+    // Netlify bundles this module to CJS; import.meta.url is missing there.
+  }
+  return path.resolve(process.cwd(), "data", "chat", "store.json");
+}
 
 function empty() {
   return { sessions: [], messages: [], assistant: null };
@@ -11,8 +21,8 @@ function empty() {
 
 function read() {
   try {
-    if (!fs.existsSync(file)) return empty();
-    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (!fs.existsSync(storeFile())) return empty();
+    const data = JSON.parse(fs.readFileSync(storeFile(), "utf8"));
     return {
       sessions: Array.isArray(data.sessions) ? data.sessions : [],
       messages: Array.isArray(data.messages) ? data.messages : [],
@@ -24,8 +34,8 @@ function read() {
 }
 
 function write(data) {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  fs.mkdirSync(path.dirname(storeFile()), { recursive: true });
+  fs.writeFileSync(storeFile(), `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
 function now() {

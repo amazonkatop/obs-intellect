@@ -1,6 +1,6 @@
 -- =============================================================================
--- OBS INTELLECT — schema for Timeweb Cloud Managed PostgreSQL
--- Run in: Timeweb Cloud → Databases → cluster → Web interface (Adminer) → SQL
+-- OBS INTELLECT — schema for PostgreSQL on the virtual server
+-- Run against database `obs` (Docker container obs-postgres), then db/chat.sql and db/brand.sql.
 -- Site reads these tables only at Astro build time. Visitors never reach the DB.
 -- Vanilla PostgreSQL: no Supabase roles, no Row Level Security.
 -- Access is the ordinary LOGIN role in DATABASE_URL (GRANT SELECT below).
@@ -167,7 +167,7 @@ insert into public.services_and_products (
   'Интеграция',
   'Connect the systems you already run: CRM, ERP, BI, APIs, telephony, documents, databases. The job is not another product — it is to make the landscape serve the process.',
   'Объединить существующие системы: CRM, 1С, ERP, BI, API, телефония, документы, базы данных. Задача — не ещё один продукт, а заставить ландшафт служить процессу.',
-  array['Astro', 'Node.js', 'Python', 'PostgreSQL', 'Timeweb Cloud', 'Stripe / ЮKassa'],
+  array['Astro', 'Node.js', 'Python', 'PostgreSQL', 'Docker', 'Stripe / ЮKassa'],
   'From USD 25,000 · 6–8 weeks',
   'От 2 000 000 ₽ · 6–8 недель',
   false,
@@ -326,7 +326,7 @@ on conflict (id) do update set
 
 -- -----------------------------------------------------------------------------
 -- Privileges: ordinary PostgreSQL GRANTs (no RLS, no Supabase anon role)
--- Create a dedicated read-only login in Timeweb Cloud and put it in DATABASE_URL.
+-- Optional: create a dedicated read-only login and put it in DATABASE_URL.
 -- The cluster owner can skip this if that owner is the build-time user.
 -- -----------------------------------------------------------------------------
 do $$

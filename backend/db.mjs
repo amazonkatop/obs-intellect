@@ -1,6 +1,28 @@
+import fs from "node:fs";
+import path from "node:path";
 import pg from "pg";
 
 const { Pool } = pg;
+
+function loadLocalEnv() {
+  if (String(process.env.DATABASE_URL || "").trim()) return;
+  try {
+    const text = fs.readFileSync(path.join(process.cwd(), ".env"), "utf8");
+    for (const line of text.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eq = trimmed.indexOf("=");
+      if (eq < 1) continue;
+      const key = trimmed.slice(0, eq).trim();
+      const value = trimmed.slice(eq + 1).trim();
+      if (process.env[key] === undefined) process.env[key] = value;
+    }
+  } catch {
+    // .env is optional
+  }
+}
+
+loadLocalEnv();
 
 let pool;
 
